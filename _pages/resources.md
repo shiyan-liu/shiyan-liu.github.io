@@ -17,7 +17,8 @@ redirect_from:
 <span class='anchor' id='resources'></span>
 
 # Cource resources
-coming soon...
+- CS course resources @ HUST: [Google Drive](https://drive.google.com/drive/folders/1hVH1cQOkzvYmdoXeh-a2mCHwMtaqIaI1?usp=sharing) (for study purposes only, do not plagiarize :)
+- My resume: [Shiyan's Resume]()
 
 # Tips
 ## About failure
