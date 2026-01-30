@@ -5,3 +5,6 @@ main:
 
   - title: "Resources"
     url: "/resources"
+
+  - title: "Tips"
+    url: "/tips"
