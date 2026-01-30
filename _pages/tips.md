@@ -28,3 +28,4 @@ On life's journey, the word “failure” carries another meaning: it signifies 
 
 ## About trying
 You may fail if you try, you'll **definitely** fail if you don't even try. No harm to try!!
+![](images/try.jpg)
