@@ -28,7 +28,7 @@ My research interests include machine learning, deep learning, reinforcement lea
 
 
 # 📝 Publications & Preprints
-- **<u>Liu, S.</u>**, Tan, B., Zhang, L., & Jin, Y. Omni-TSP: Multi-view Geometric Grounding via Alternating Attention for Traveling Salesman Problem. (under review)
+- **<u>Liu, S.</u>**, Tan, B., Zhang, L., & Jin, Y. Omni-TSP: Multi-view Geometric Grounding via Alternating Attention for Traveling Salesman Problem. (under review) [[paper](https://drive.google.com/file/d/1QoqiMDCs_sLIzmRTKXeCpO_SXKNeq0Vp/view?usp=sharing)]
 - **<u>Liu, S.</u>**, Ma, J., & Qu, R. DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation. In Socially Responsible and Trustworthy Foundation Models at NeurIPS 2025. [[paper](https://openreview.net/forum?id=RNz4AfOfh3)] [[code](https://github.com/shiyan-liu/DICE)]
 - **<u>Liu, S.</u>**, Tan, B., Cao, Z., & Jin, Y. (2025). VAGPO: Vision-augmented Asymmetric Group Preference Optimization for Graph Routing Problems. arXiv preprint arXiv:2508.01774. [[paper](https://arxiv.org/abs/2508.01774)]
 - **<u>Liu, S.</u>**, Qu, R., & Jin, Y. (2025). FluentLip: A Phonemes-Based Two-stage Approach for Audio-Driven Lip Synthesis with Optical Flow Consistency. arXiv preprint arXiv:2504.04427. [[paper](https://arxiv.org/abs/2504.04427)]
