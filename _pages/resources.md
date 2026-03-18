@@ -18,4 +18,4 @@ redirect_from:
 
 # Resources
 - CS course resources @ HUST: [Google Drive](https://drive.google.com/drive/folders/1hVH1cQOkzvYmdoXeh-a2mCHwMtaqIaI1?usp=sharing) (Coming soon; for study purposes only, do not plagiarize :)
-- My resume: [Shiyan's Resume]() (Coming soon)
+- My resume: [Shiyan's Resume](https://drive.google.com/file/d/1VIu2rD61StRlhRVD8EzIc64Pv-eAlsyf/view?usp=sharing) (by 2025-11)
