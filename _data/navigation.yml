@@ -9,5 +9,5 @@ main:
   - title: "Tips"
     url: "/tips"
 
-  - title: "Trips"
-    url: "/trips"
+  # - title: "Trips"
+  #   url: "/trips"

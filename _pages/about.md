@@ -23,7 +23,7 @@ Hi! I'm **Shiyan Liu**, a senior at Huazhong University and Science and Technolo
 
 My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI.
 
-<span style="color: red">Recently I'm actively seeking for **Research Assistant**/**Machine Learning Engineer Intern** opportunities!</span>
+<span style="color: red">Recently I'm actively seeking **Research Assistant**/**Machine Learning Engineer Intern** opportunities!</span>
 
 # 📖 Educations
 - *2026.09 - 2027.09 (prospective)*, MSc Computing(AI&ML), **Imperial College London**. 
@@ -33,7 +33,7 @@ My research interests include machine learning, deep learning, reinforcement lea
 
 # 📝 Publications & Preprints
 - **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. 	
-**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. (in preparation) [[paper]()]
+**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. (in preparation) [[paper](https://arxiv.org/abs/2603.18388)]
 
 - **<u>Liu, S.</u>**, Tan, B., Zhang, L., & Jin, Y. **Omni-TSP: Multi-view Geometric Grounding via Alternating Attention for Traveling Salesman Problem**. (under review) [[paper](https://drive.google.com/file/d/1QoqiMDCs_sLIzmRTKXeCpO_SXKNeq0Vp/view?usp=sharing)]
 - **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. In Socially Responsible and Trustworthy Foundation Models at NeurIPS 2025. [[paper](https://openreview.net/forum?id=RNz4AfOfh3)] [[code](https://github.com/shiyan-liu/DICE)]
