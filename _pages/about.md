@@ -17,7 +17,7 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-> Last update: 2026-03-18
+> Last update: 2026-04-21
 
 Hi! I'm **Shiyan Liu**, a senior at Huazhong University and Science and Technology (HUST) majoring in Data Science & Big Data Technology. I'm also a prospective MSc Computing(AI&ML) student at Imperial starting 2026 Fall. Now I'm studying at UC Berkeley as a visiting student during 2026 Spring.
 
@@ -32,11 +32,13 @@ My research interests include machine learning, deep learning, reinforcement lea
 
 
 # 📝 Publications & Preprints
+- **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. In KnowFM @ ACL 2026. [[paper](https://openreview.net/forum?id=5AQQ2Dz8mx)]
+
 - **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. 	
-**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. (in preparation) [[paper](https://arxiv.org/abs/2603.18388)]
+**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. (under review) [[paper](https://arxiv.org/abs/2603.18388)]
 
 - **<u>Liu, S.</u>**, Tan, B., Zhang, L., & Jin, Y. **Omni-TSP: Multi-view Geometric Grounding via Alternating Attention for Traveling Salesman Problem**. (under review) [[paper](https://drive.google.com/file/d/1QoqiMDCs_sLIzmRTKXeCpO_SXKNeq0Vp/view?usp=sharing)]
-- **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. In Socially Responsible and Trustworthy Foundation Models at NeurIPS 2025. [[paper](https://openreview.net/forum?id=RNz4AfOfh3)] [[code](https://github.com/shiyan-liu/DICE)]
+- **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. In ResponsibleFM @ NeurIPS 2025. [[paper](https://openreview.net/forum?id=RNz4AfOfh3)] [[code](https://github.com/shiyan-liu/DICE)]
 - **<u>Liu, S.</u>**, Tan, B., Cao, Z., & Jin, Y. (2025). **VAGPO: Vision-augmented Asymmetric Group Preference Optimization for Graph Routing Problems**. arXiv preprint arXiv:2508.01774. [[paper](https://arxiv.org/abs/2508.01774)]
 - **<u>Liu, S.</u>**, Qu, R., & Jin, Y. (2025). **FluentLip: A Phonemes-Based Two-stage Approach for Audio-Driven Lip Synthesis with Optical Flow Consistency**. arXiv preprint arXiv:2504.04427. [[paper](https://arxiv.org/abs/2504.04427)]
 
@@ -45,6 +47,7 @@ My research interests include machine learning, deep learning, reinforcement lea
 - *2025.03 - 2025.08*, Software Development Engineer @ **JD.com**, Beijing, China.
 
 # 🎖 Honors and Awards
+- *2026.04* Outstanding Graduate (HUST).
 - *2025.09* National Scholarship. 
 - *2025.09* Outstanding Student Scholarship (HUST).
 - *2025.05* Tencent Scholarship.
