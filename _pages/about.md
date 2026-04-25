@@ -17,7 +17,7 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-> Last update: 2026-04-21
+> Last update: 2026-04-24
 
 Hi! I'm **Shiyan Liu**, a senior at Huazhong University and Science and Technology (HUST) majoring in Data Science & Big Data Technology. I'm also a prospective MSc Computing(AI&ML) student at Imperial starting 2026 Fall. Now I'm studying at UC Berkeley as a visiting student during 2026 Spring.
 
@@ -35,7 +35,7 @@ My research interests include machine learning, deep learning, reinforcement lea
 - **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. In KnowFM @ ACL 2026. [[paper](https://openreview.net/forum?id=5AQQ2Dz8mx)]
 
 - **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. 	
-**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. (under review) [[paper](https://arxiv.org/abs/2603.18388)]
+**Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. In ACL 2026 (SRW) [[paper](https://arxiv.org/abs/2603.18388)]
 
 - **<u>Liu, S.</u>**, Tan, B., Zhang, L., & Jin, Y. **Omni-TSP: Multi-view Geometric Grounding via Alternating Attention for Traveling Salesman Problem**. (under review) [[paper](https://drive.google.com/file/d/1QoqiMDCs_sLIzmRTKXeCpO_SXKNeq0Vp/view?usp=sharing)]
 - **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. In ResponsibleFM @ NeurIPS 2025. [[paper](https://openreview.net/forum?id=RNz4AfOfh3)] [[code](https://github.com/shiyan-liu/DICE)]
