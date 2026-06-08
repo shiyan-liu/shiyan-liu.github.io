@@ -6,8 +6,8 @@ main:
   - title: "Acknowledgements"
     url: "/acknowledgements/"
 
-  - title: "Tips"
-    url: "/tips"
+  - title: "Misc"
+    url: "/misc/"
 
   # - title: "Trips"
   #   url: "/trips"
