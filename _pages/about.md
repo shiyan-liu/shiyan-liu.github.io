@@ -51,3 +51,37 @@ My research interests include machine learning, deep learning, reinforcement lea
 - *2025.09* Outstanding Student Scholarship (HUST).
 - *2025.05* Tencent Scholarship.
 - *2024.09* Academic Excellence Scholarship (HUST).
+
+---
+<!-- TEMP: font comparison, remove after choosing -->
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Playfair+Display&family=EB+Garamond&family=Inter&family=Lato&family=Source+Sans+Pro&family=Nunito&display=swap" rel="stylesheet">
+
+<p style="font-size:0.85em;color:gray;">🔤 Font comparison (temporary) — same text in different fonts:</p>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Merriweather',serif">
+<strong>Merriweather (serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Playfair Display',serif">
+<strong>Playfair Display (serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'EB Garamond',serif">
+<strong>EB Garamond (serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Inter',sans-serif">
+<strong>Inter (sans-serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Lato',sans-serif">
+<strong>Lato (sans-serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Source Sans Pro',sans-serif">
+<strong>Source Sans Pro (sans-serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
+
+<div style="border:1px solid #ddd;padding:12px;margin:8px 0;border-radius:4px;font-family:'Nunito',sans-serif">
+<strong>Nunito (sans-serif)</strong><br>My research interests include machine learning and deep learning. I have been a proud Tottenham Hotspur supporter since 2018.
+</div>
