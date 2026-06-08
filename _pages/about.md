@@ -19,9 +19,11 @@ redirect_from:
 
 > Last update: 2026-06-08
 
-Hi! I'm **Shiyan Liu**, a recent graduate from HUST with a BEng in Data Science & Big Data Technology. I had a great time at UC Berkeley as a visiting student in Spring 2026, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) this Fall.
+Hi! I'm **Shiyan Liu**, a recent graduate from HUST with a BEng in Data Science & Big Data Technology. I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) in Fall 2026. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
 
-My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI. Outside of research, I enjoy playing football and have been a proud Tottenham Hotspur supporter since 2018. Come on you Spurs! 🤍⚽️
+My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI. None of this would have been possible without the people who believed in me along the way. [→ Acknowledgements](/acknowledgements/)
+
+Outside of research, I love playing football and have proudly been a devoted Tottenham Hotspur supporter since 2018. Come on you Spurs! 🤍⚽️
 
 <span style="display:inline-block;background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6;border-radius:4px;padding:4px 10px;font-size:0.95em">I am currently and actively looking for <strong>Research Assistant</strong> opportunities, and would greatly appreciate any leads. Please feel free to reach out!</span>
 
