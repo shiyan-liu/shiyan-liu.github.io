@@ -19,9 +19,9 @@ redirect_from:
 
 > Last update: 2026-06-08
 
-Hi! I'm **Shiyan Liu**, a recent graduate from HUST with a BEng in Data Science & Big Data Technology. I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) in Fall 2026. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
+Hi there! I'm **Shiyan Liu**, a recent BEng graduate in Data Science & Big Data Technology from Huazhong University of Science and Technology (HUST). I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) in Fall 2026. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
 
-My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI. None of this would have been possible without the people who believed in me along the way. [→ Acknowledgements](/acknowledgements/)
+My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI. None of this would have been possible without the people who believed in me along the way. [→ Acknowledgements](/acknowledgements)
 
 Outside of research, I love playing football and have proudly been a devoted Tottenham Hotspur supporter since 2018. Come on you Spurs! 🤍⚽️
 

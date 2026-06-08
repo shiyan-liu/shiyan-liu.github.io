@@ -1,5 +1,5 @@
 ---
-permalink: /acknowledgements/
+permalink: /acknowledgements
 title: ""
 excerpt: ""
 author_profile: true

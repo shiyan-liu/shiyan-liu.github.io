@@ -1,11 +1,11 @@
 ---
-permalink: /misc/
+permalink: /misc
 title: ""
 excerpt: ""
 author_profile: true
 ---
 
-# Misc
+# Miscellaneous
 
 ## A Spurs Fan's Tale
 

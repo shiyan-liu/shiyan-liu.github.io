@@ -4,10 +4,10 @@ main:
     url: "/#about-me"
 
   - title: "Acknowledgements"
-    url: "/acknowledgements/"
+    url: "/acknowledgements"
 
-  - title: "Misc"
-    url: "/misc/"
+  - title: "Miscellaneous"
+    url: "/misc"
 
   # - title: "Trips"
   #   url: "/trips"
