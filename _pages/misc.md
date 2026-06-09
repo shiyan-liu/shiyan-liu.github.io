@@ -25,11 +25,11 @@ Perhaps that is why this club means so much to me. Following Spurs feels a lot l
 
 Come on you Spurs. 🤍⚽️
 
-<div style="display:grid;grid-template-columns:repeat(2,minmax(0,420px));gap:8px;margin-top:20px;margin-bottom:40px;justify-content:start">
-  <img src="/images/misc/1.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/2.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/3.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/4.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:20px;margin-bottom:40px">
+  <img src="/images/misc/1.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
+  <img src="/images/misc/2.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
+  <img src="/images/misc/3.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
+  <img src="/images/misc/4.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
 </div>
 
 ## About Failure
