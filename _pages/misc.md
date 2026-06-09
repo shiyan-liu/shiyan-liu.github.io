@@ -25,7 +25,7 @@ Perhaps that is why this club means so much to me. Following Spurs feels a lot l
 
 Come on you Spurs. 🤍⚽️
 
-<div style="display:grid;grid-template-columns:420px 420px;gap:8px;margin-top:20px;margin-bottom:40px;justify-content:start">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,420px));gap:8px;margin-top:20px;margin-bottom:40px;justify-content:start">
   <img src="/images/misc/1.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
   <img src="/images/misc/2.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
   <img src="/images/misc/3.JPG" style="width:100%;height:280px;object-fit:cover;border-radius:4px;">
