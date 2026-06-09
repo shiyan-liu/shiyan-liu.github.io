@@ -25,11 +25,16 @@ Perhaps that is why this club means so much to me. Following Spurs feels a lot l
 
 Come on you Spurs. 🤍⚽️
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px;margin-top:20px;margin-bottom:40px">
-  <img src="/images/misc/1.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/2.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/3.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
-  <img src="/images/misc/4.JPG" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;">
+<style>
+.misc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:20px; margin-bottom:40px; max-width:820px; }
+@media (max-width: 540px) { .misc-grid { grid-template-columns:1fr; } }
+.misc-grid img { width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:4px; }
+</style>
+<div class="misc-grid">
+  <img src="/images/misc/1.JPG">
+  <img src="/images/misc/2.JPG">
+  <img src="/images/misc/3.JPG">
+  <img src="/images/misc/4.JPG">
 </div>
 
 ## About Failure
