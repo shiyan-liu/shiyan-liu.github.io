@@ -25,6 +25,24 @@ My research interests include machine learning, deep learning, reinforcement lea
 
 Outside of research, I love playing football and have proudly been a devoted Tottenham Hotspur supporter since 2018. Come on you Spurs! 🤍⚽️
 
+<div style="display:inline-block;background:#eaf3fb;border-radius:5px;padding:7px 12px 1px;margin:14px 0">
+  <div style="font-weight:700;color:#1a6fa8;font-size:0.88em;margin-bottom:2px">🔬 Research Interests &nbsp;<span style="font-weight:normal;font-style:italic;color:#333">Finding the right answer — and knowing it's right — across graphs, documents, and language.</span></div>
+  <table style="border:none;border-collapse:collapse">
+    <tr>
+      <td style="border:none;padding:1px 8px 1px 0;vertical-align:top;white-space:nowrap;font-weight:600;font-size:0.86em;color:#333">Neural Combinatorial Optimization</td>
+      <td style="border:none;padding:1px 0;font-size:0.86em;color:#555;white-space:nowrap">Geometric equivariance: <a href="https://arxiv.org/abs/2606.01084">MViewRouter</a> &nbsp;·&nbsp; Multimodal fusion: <a href="https://arxiv.org/abs/2508.01774">VAGPO</a></td>
+    </tr>
+    <tr>
+      <td style="border:none;padding:1px 8px 1px 0;vertical-align:top;white-space:nowrap;font-weight:600;font-size:0.86em;color:#333">Dense Retrieval</td>
+      <td style="border:none;padding:1px 0;font-size:0.86em;color:#555;white-space:nowrap">Positive-unlabeled: <a href="https://drive.google.com/file/d/1GZQx-IsRWwkPur0ifNjz3rAgbdC_rHZa/view?usp=sharing">PURE</a> &nbsp;·&nbsp; Test-time adaptation: <a href="https://arxiv.org/abs/2606.01070">DART</a></td>
+    </tr>
+    <tr>
+      <td style="border:none;padding:1px 8px 1px 0;vertical-align:top;white-space:nowrap;font-weight:600;font-size:0.86em;color:#333">Trustworthy LLM Systems</td>
+      <td style="border:none;padding:1px 0;font-size:0.86em;color:#555;white-space:nowrap">Probabilistic evaluation: <a href="https://arxiv.org/abs/2512.22629">DICE</a> &nbsp;·&nbsp; Explainable optimization: <a href="https://arxiv.org/abs/2603.18388">VISTA</a></td>
+    </tr>
+  </table>
+</div>
+
 <span style="display:inline-block;background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6;border-radius:4px;padding:4px 10px;font-size:0.95em">I am currently and actively looking for <strong>(Volunteer) Research Assistant</strong> opportunities, and would greatly appreciate any leads.<br>Please feel free to reach me at <a href="mailto:shyl@hust.edu.cn" style="color:#c0392b">shyl@hust.edu.cn</a> (institutional) or <a href="mailto:shyliu.china@gmail.com" style="color:#c0392b">shyliu.china@gmail.com</a> (personal).</span>
 
 # 📖 Educations
