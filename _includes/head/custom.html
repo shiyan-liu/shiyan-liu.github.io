@@ -20,4 +20,47 @@
 </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
 
+<link rel="alternate" type="application/rss+xml" title="Shiyan Liu" href="/feed.xml">
+
+<meta name="twitter:card" content="summary">
+<meta property="og:image" content="{{ site.url }}/images/avatar_0608_srgb.jpg">
+<meta name="twitter:image" content="{{ site.url }}/images/avatar_0608_srgb.jpg">
+{% if page.description %}
+<meta name="description" content="{{ page.description }}">
+{% elsif site.description %}
+<meta name="description" content="{{ site.description }}">
+{% endif %}
+
+<style>
+/* Back to top button */
+#back-to-top {
+  position: fixed;
+  bottom: 2em;
+  right: 2em;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a8288;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, border-color 0.15s, color 0.15s;
+  z-index: 999;
+}
+#back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+#back-to-top:hover {
+  border-color: #aaa;
+  color: #333;
+}
+</style>
+
 <!-- end custom head snippets -->

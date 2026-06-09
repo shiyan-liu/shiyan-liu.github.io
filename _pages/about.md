@@ -17,7 +17,7 @@ redirect_from:
 
 <span class='anchor' id='about-me'></span>
 
-> Last update: 2026-06-09
+> Last update: {{ site.time | date: "%Y-%m-%d" }}
 
 Hi there! I'm **Shiyan Liu (刘师言)**, a recent BEng graduate in Data Science & Big Data Technology from Huazhong University of Science and Technology (HUST). I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) in Fall 2026. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
 
