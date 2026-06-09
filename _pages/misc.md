@@ -1,5 +1,5 @@
 ---
-permalink: /misc
+permalink: /miscellaneous
 title: ""
 excerpt: ""
 author_profile: true
