@@ -25,7 +25,13 @@ My research interests include machine learning, deep learning, reinforcement lea
 
 Outside of research, I love playing football and have proudly been a devoted Tottenham Hotspur supporter since 2018. Come on you Spurs! 🤍⚽️
 
-<div style="display:inline-block;background:#eaf3fb;border-radius:5px;padding:7px 12px 1px;margin:14px 0;max-width:100%;overflow-x:auto">
+<style>
+@media (max-width:600px) {
+  .ri-box { display:block !important; overflow-x:hidden !important; }
+  .ri-box td { white-space:normal !important; }
+}
+</style>
+<div class="ri-box" style="display:inline-block;background:#eaf3fb;border-radius:5px;padding:7px 12px 1px;margin:14px 0;max-width:100%;overflow-x:auto">
   <div style="font-weight:700;color:#1a6fa8;font-size:0.88em;margin-bottom:2px">🔬 Research Interests &nbsp;<span style="font-weight:normal;font-style:italic;color:#333">Finding the right answer — and knowing it's right — across graphs, documents, and language.</span></div>
   <table style="border:none;border-collapse:collapse">
     <tr>
