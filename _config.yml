@@ -7,7 +7,7 @@
 
 # Site Settings
 title                    : "Shiyan Liu"
-description              : "BEng graduate in Data Science from HUST, incoming MSc student at Imperial College London. Research interests: machine learning, deep reinforcement learning, and agentic AI."
+description              : "BEng graduate in Data Science from HUST, MSc student in Computing (AI&ML) at Imperial College London. Research interests: machine learning, deep reinforcement learning, and agentic AI."
 url                      : "https://shiyan-liu.github.io"
 repository               : "shiyan-liu/acad-homepage.github.io"
 google_scholar_stats_use_cdn : true
@@ -25,7 +25,7 @@ author:
   name             : "Shiyan Liu"
   avatar           : "images/avatar_0608_srgb.jpg"
   bio              : "Dare Dream Do. COYS🤍"
-  location         : "Wuhan, China"
+  location         : "London, UK"
   employer         :
   pubmed           : 
   googlescholar    : "https://scholar.google.com/citations?user=ITv29t8AAAAJ"

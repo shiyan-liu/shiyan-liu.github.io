@@ -19,7 +19,7 @@ redirect_from:
 
 > Last update: {{ site.time | date: "%Y-%m-%d" }}
 
-Hi there! I'm **Shiyan Liu (刘师言)**, a recent BEng graduate in Data Science & Big Data Technology from Huazhong University of Science and Technology (HUST). I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now heading to Imperial College London for an MSc in Computing (AI&ML) in Fall 2026. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
+Hi there! I'm **Shiyan Liu (刘师言)**, a recent BEng graduate in Data Science & Big Data Technology from Huazhong University of Science and Technology (HUST). I spent a wonderful Spring 2026 semester at UC Berkeley as a visiting student, and I'm now pursuing an MSc in Computing (AI&ML) at Imperial College London. I also had a fulfilling internship at JD.com in 2025, and am glad to be back there this summer as a Machine Learning Engineer.
 
 My research interests include machine learning, deep learning, reinforcement learning, and data science. My prior reseach experiences focused on deep reinforcement learning and agentic AI systems. I look forward to collaborating with fellow researchers and contributing to the frontiers of AI. None of this would have been possible without the people who believed in me along the way. [→ Acknowledgements](/acknowledgements)
 
@@ -56,7 +56,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 <div style="display:flex;align-items:center;margin:10px 0">
   <img src="/images/icons/imperial-icon.png" style="height:36px;width:36px;object-fit:contain;margin-right:12px;flex-shrink:0;">
   <div>
-    <strong>Imperial College London</strong> <span style="color:red;margin-left:4px"><em>Prospective</em></span><br>
+    <strong>Imperial College London</strong> <span style="color:red;margin-left:4px"><em>Ongoing</em></span><br>
     <span style="color:#555">MSc Computing (AI&ML)</span> <span style="color:#888">· 2026.09 - 2027.12</span> <span style="color:#bbb">· London, UK</span>
   </div>
 </div>
@@ -83,8 +83,8 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 <div style="display:flex;align-items:center;margin:10px 0">
   <img src="/images/icons/jd-icon.svg" style="height:36px;width:36px;object-fit:contain;margin-right:12px;flex-shrink:0;">
   <div>
-    <strong>JD.com</strong> <span style="color:red;margin-left:4px"><em>Ongoing</em></span><br>
-    <span style="color:#555">Machine Learning Engineer</span> <span style="color:#888">· 2026.06 - now</span> <span style="color:#bbb">· Beijing, China</span>
+    <strong>JD.com</strong><br>
+    <span style="color:#555">Machine Learning Engineer</span> <span style="color:#888">· 2026.06 - 2026.09</span> <span style="color:#bbb">· Beijing, China</span>
   </div>
 </div>
 
@@ -106,11 +106,11 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 
 # 📝 Publications
 
-- [2026.09] **<u>Liu, S.</u>** **The Deadline Effect: Identifying and Correcting Temporal Bias in Human Evaluation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:0.88em">Accepted @ NeurIPS 2026 (Poster)</span> [[paper]]
-- [2026.09] **<u>Liu, S.</u>**, Qu, R. **Positive-Unlabeled Contrastive Retrieval for Graduate Program Recommendation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:0.88em">Accepted @ AACL-IJCNLP 2026</span> [[paper]]
-- [2026.04] **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:0.88em">Accepted @ KnowFM · ACL 2026</span> [[paper](https://arxiv.org/abs/2606.01070)]
-- [2026.04] **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. **Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:0.88em">Accepted @ ACL 2026 SRW</span> [[paper](https://arxiv.org/abs/2603.18388)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=Reflection+in+the+Dark+Exposing+and+Escaping+the+Black+Box+in+Reflective+Prompt+Optimization)
-- [2025.11] **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:0.88em">Accepted @ ResponsibleFM · NeurIPS 2025</span> [[paper](https://arxiv.org/abs/2512.22629)] [[code](https://github.com/shiyan-liu/DICE)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=DICE+Discrete+Interpretable+Comparative+Evaluation+Probabilistic+Scoring+Retrieval-Augmented+Generation)
+- [2026.09 · NeurIPS 2026] **<u>Liu, S.</u>** **The Deadline Effect: Identifying and Correcting Temporal Bias in Human Evaluation**. [paper]
+- [2026.09 · AACL-IJCNLP 2026] **<u>Liu, S.</u>**, Qu, R. **Positive-Unlabeled Contrastive Retrieval for Graduate Program Recommendation**. [paper]
+- [2026.04 · KnowFM @ ACL 2026] **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. [[paper](https://arxiv.org/abs/2606.01070)]
+- [2026.04 · ACL 2026 SRW] **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. **Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. [[paper](https://arxiv.org/abs/2603.18388)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=Reflection+in+the+Dark+Exposing+and+Escaping+the+Black+Box+in+Reflective+Prompt+Optimization)
+- [2025.11 · ResponsibleFM @ NeurIPS 2025] **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. [[paper](https://arxiv.org/abs/2512.22629)] [[code](https://github.com/shiyan-liu/DICE)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=DICE+Discrete+Interpretable+Comparative+Evaluation+Probabilistic+Scoring+Retrieval-Augmented+Generation)
 
 # 📄 Preprints & Under Review
 
