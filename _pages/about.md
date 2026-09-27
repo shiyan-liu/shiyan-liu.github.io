@@ -49,7 +49,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
   </table>
 </div>
 
-<span style="display:inline-block;background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6;border-radius:4px;padding:4px 10px;font-size:0.95em">I am currently and actively looking for <strong>(Volunteer) Research Assistant</strong> opportunities, and would greatly appreciate any leads.<br>Please feel free to reach me at <a href="mailto:shyl@hust.edu.cn" style="color:#c0392b">shyl@hust.edu.cn</a> (institutional) or <a href="mailto:shyliu.china@gmail.com" style="color:#c0392b">shyliu.china@gmail.com</a> (personal).</span>
+<span style="display:inline-block;background:#fff0f0;color:#c0392b;border:1px solid #f5c6c6;border-radius:4px;padding:4px 10px;font-size:0.95em">I am currently and actively looking for <strong>(Volunteer) Research Assistant</strong> opportunities, and would greatly appreciate any leads.<br>Please feel free to reach me at <a href="mailto:shiyan.liu26@ic.ac.uk" style="color:#c0392b">shiyan.liu26@ic.ac.uk</a> (institutional) or <a href="mailto:shyliu.china@gmail.com" style="color:#c0392b">shyliu.china@gmail.com</a> (personal).</span>
 
 # 📖 Educations
 
