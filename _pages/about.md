@@ -119,7 +119,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 - [2025] **<u>Liu, S.</u>**, Qu, R., & Jin, Y. **FluentLip: A Phonemes-Based Two-stage Approach for Audio-Driven Lip Synthesis with Optical Flow Consistency**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">arXiv Preprint</span> [[paper](https://arxiv.org/abs/2504.04427)]
 
 # 🎖 Honors and Awards
-- *2026.06* Outstanding Graduation Design (HUST).
+- *2026.06* Outstanding Undergraduate Thesis (HUST).
 - *2026.04* Outstanding Graduate (HUST).
 - *2025.09* National Scholarship. 
 - *2025.09* Outstanding Student Scholarship (HUST).
