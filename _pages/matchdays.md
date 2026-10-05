@@ -50,31 +50,7 @@ Come on you Spurs. 🤍⚽️
 <div class="md-list" id="mdlog" markdown="0">
 
 <div class="md-group">
-<div class="md-season"><span>UEFA Nations League</span><span class="md-count">2 matches</span></div>
-
-<div class="md-item" data-date="2026-09-29" style="--c-home:20,60,120;--c-away:24,60,140">
-  <div class="md-main">
-    <div class="md-teams">
-      <div class="md-side md-side-home">
-        <span class="md-crest"><img src="/images/crests/czechia.svg" alt="Czech Republic"></span>
-        <span class="md-team">Czech Republic</span>
-      </div>
-      <span class="md-score">0 <span class="md-dash">–</span> 2</span>
-      <div class="md-side md-side-away">
-        <span class="md-crest"><img src="/images/crests/england.svg" alt="England"></span>
-        <span class="md-team md-away">England</span>
-      </div>
-    </div>
-    <div class="md-meta">
-      <span class="md-date">Tue 29 Sep 2026</span>
-      <span class="md-chip md-chip-nl">Matchday 2</span>
-    </div>
-  </div>
-  <div class="md-stub">
-    <div class="md-ground">Fortuna Arena</div>
-    <div class="md-city">Prague, Czechia</div>
-  </div>
-</div>
+<div class="md-season"><span>UEFA Nations League</span><span class="md-count">1 match</span></div>
 
 <div class="md-item" data-date="2026-09-26" style="--c-home:24,60,140;--c-away:170,21,27">
   <div class="md-main">
