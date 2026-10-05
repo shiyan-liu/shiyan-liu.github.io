@@ -129,7 +129,6 @@ Come on you Spurs. 🤍⚽️
   <div class="md-stub">
     <div class="md-ground">San Mamés</div>
     <div class="md-city">Bilbao, Spain</div>
-    <div class="md-seat">Behind the goal</div>
   </div>
 </div>
 </div>
@@ -185,7 +184,6 @@ Come on you Spurs. 🤍⚽️
 .md-stub::after { bottom:-9px; border-color:#e3e6ea; }
 .md-ground { font-size:.88em; font-weight:600; color:#333; }
 .md-city { font-size:.78em; color:#888; margin-top:2px; }
-.md-seat { font-size:.74em; color:#aaa; margin-top:8px; }
 .md-item.md-empty { --c-home:160,168,180; --c-away:160,168,180; border-style:dashed; border-color:#d9dee4; }
 .md-empty-text { font-size:.9em; color:#999; font-style:italic; }
 @media (max-width: 600px) {
@@ -199,7 +197,7 @@ Come on you Spurs. 🤍⚽️
 }
 </style>
 
-<!-- 数据格式：日期 · 赛事(UEL/UCL/PL/FA) · 主队 · 比分 · 客队 · 球场 · 城市 · 看台/座位；票根照片放进下方 .md-photos 网格
+<!-- 数据格式：日期 · 赛事(UEL/UCL/PL/FA) · 主队 · 比分 · 客队 · 球场 · 城市；票根照片放进下方 .md-photos 网格
      队徽：官方 SVG 来自 Wikimedia（Tottenham_Hotspur.svg / Manchester_United_FC_crest.svg），已存 /images/crests/；
      新球队：下载官方 SVG 放入该目录；渐变底色在 .md-item 的 style 里设 --c-home/--c-away (R,G,B)；
      没找到队徽的球队用 <span class="md-crest md-crest-txt">缩写</span> 代替 <img> -->
