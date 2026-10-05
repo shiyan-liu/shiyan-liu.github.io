@@ -162,7 +162,7 @@ Come on you Spurs. 🤍⚽️
 .md-teams { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; }
 .md-side { display:flex; align-items:center; gap:10px; min-width:0; }
 .md-side-away { flex-direction:row-reverse; }
-.md-crest { flex:0 0 36px; width:36px; height:36px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.14); display:flex; align-items:center; justify-content:center; padding:4px; }
+.md-crest { flex:0 0 36px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; }
 .md-crest img { max-width:100%; max-height:100%; object-fit:contain; }
 .md-crest-tall img { max-height:118%; max-width:78%; }
 .md-team { font-size:.98em; font-weight:600; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
