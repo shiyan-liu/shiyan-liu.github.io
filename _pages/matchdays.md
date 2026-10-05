@@ -53,17 +53,21 @@ Come on you Spurs. 🤍⚽️
 <div class="md-season"><span>UEFA Nations League</span><span class="md-count">2 matches</span></div>
 
 <div class="md-item" data-date="2026-09-29" style="--c-home:20,60,120;--c-away:24,60,140">
-  <img class="md-wm md-wm-home" src="/images/crests/czechia.svg" alt="">
-  <img class="md-wm md-wm-away" src="/images/crests/england.svg" alt="">
   <div class="md-main">
-    <div class="md-top">
-      <span class="md-date">Tue 29 Sep 2026</span>
-      <span class="md-chip md-chip-nl">UEFA Nations League · Group A3</span>
-    </div>
     <div class="md-teams">
-      <span class="md-team">Czech Republic</span>
+      <div class="md-side md-side-home">
+        <span class="md-crest"><img src="/images/crests/czechia.svg" alt="Czech Republic"></span>
+        <span class="md-team">Czech Republic</span>
+      </div>
       <span class="md-score">0 <span class="md-dash">–</span> 2</span>
-      <span class="md-team md-away">England</span>
+      <div class="md-side md-side-away">
+        <span class="md-crest"><img src="/images/crests/england.svg" alt="England"></span>
+        <span class="md-team md-away">England</span>
+      </div>
+    </div>
+    <div class="md-meta">
+      <span class="md-date">Tue 29 Sep 2026</span>
+      <span class="md-chip md-chip-nl">Matchday 2</span>
     </div>
   </div>
   <div class="md-stub">
@@ -73,17 +77,21 @@ Come on you Spurs. 🤍⚽️
 </div>
 
 <div class="md-item" data-date="2026-09-26" style="--c-home:24,60,140;--c-away:170,21,27">
-  <img class="md-wm md-wm-home" src="/images/crests/england.svg" alt="">
-  <img class="md-wm md-wm-away" src="/images/crests/spain.svg" alt="">
   <div class="md-main">
-    <div class="md-top">
-      <span class="md-date">Sat 26 Sep 2026</span>
-      <span class="md-chip md-chip-nl">UEFA Nations League · Group A3</span>
-    </div>
     <div class="md-teams">
-      <span class="md-team">England</span>
+      <div class="md-side md-side-home">
+        <span class="md-crest"><img src="/images/crests/england.svg" alt="England"></span>
+        <span class="md-team">England</span>
+      </div>
       <span class="md-score">2 <span class="md-dash">–</span> 3</span>
-      <span class="md-team md-away">Spain</span>
+      <div class="md-side md-side-away">
+        <span class="md-crest"><img src="/images/crests/spain.svg" alt="Spain"></span>
+        <span class="md-team md-away">Spain</span>
+      </div>
+    </div>
+    <div class="md-meta">
+      <span class="md-date">Sat 26 Sep 2026</span>
+      <span class="md-chip md-chip-nl">Matchday 1</span>
     </div>
   </div>
   <div class="md-stub">
@@ -97,17 +105,21 @@ Come on you Spurs. 🤍⚽️
 <div class="md-season"><span>Major League Soccer</span><span class="md-count">1 match</span></div>
 
 <div class="md-item" data-date="2026-02-21" style="--c-home:30,30,35;--c-away:226,60,110">
-  <img class="md-wm md-wm-home" src="/images/crests/lafc.svg" alt="">
-  <img class="md-wm md-wm-away" src="/images/crests/inter-miami.svg" alt="">
   <div class="md-main">
-    <div class="md-top">
-      <span class="md-date">Sat 21 Feb 2026</span>
-      <span class="md-chip md-chip-mls">Major League Soccer · Season opener</span>
-    </div>
     <div class="md-teams">
-      <span class="md-team">Los Angeles FC</span>
+      <div class="md-side md-side-home">
+        <span class="md-crest"><img src="/images/crests/lafc.svg" alt="Los Angeles FC"></span>
+        <span class="md-team">Los Angeles FC</span>
+      </div>
       <span class="md-score">3 <span class="md-dash">–</span> 0</span>
-      <span class="md-team md-away">Inter Miami</span>
+      <div class="md-side md-side-away">
+        <span class="md-crest"><img src="/images/crests/inter-miami.svg" alt="Inter Miami"></span>
+        <span class="md-team md-away">Inter Miami</span>
+      </div>
+    </div>
+    <div class="md-meta">
+      <span class="md-date">Sat 21 Feb 2026</span>
+      <span class="md-chip md-chip-mls">Season opener</span>
     </div>
   </div>
   <div class="md-stub">
@@ -121,17 +133,21 @@ Come on you Spurs. 🤍⚽️
 <div class="md-season"><span>UEFA Europa League</span><span class="md-count">1 match</span></div>
 
 <div class="md-item" data-date="2025-05-21" style="--c-home:19,34,87;--c-away:218,41,28">
-  <img class="md-wm md-wm-home" src="/images/crests/tottenham-hotspur.svg" alt="">
-  <img class="md-wm md-wm-away" src="/images/crests/manchester-united.svg" alt="">
   <div class="md-main">
-    <div class="md-top">
-      <span class="md-date">Wed 21 May 2025</span>
-      <span class="md-chip md-chip-uel">UEFA Europa League · Final</span>
-    </div>
     <div class="md-teams">
-      <span class="md-team">Tottenham Hotspur</span>
+      <div class="md-side md-side-home">
+        <span class="md-crest md-crest-tall"><img src="/images/crests/tottenham-hotspur.svg" alt="Tottenham Hotspur"></span>
+        <span class="md-team">Tottenham Hotspur</span>
+      </div>
       <span class="md-score">1 <span class="md-dash">–</span> 0</span>
-      <span class="md-team md-away">Manchester United</span>
+      <div class="md-side md-side-away">
+        <span class="md-crest md-crest-tall"><img src="/images/crests/manchester-united.svg" alt="Manchester United"></span>
+        <span class="md-team md-away">Manchester United</span>
+      </div>
+    </div>
+    <div class="md-meta">
+      <span class="md-date">Wed 21 May 2025</span>
+      <span class="md-chip md-chip-uel">Final</span>
     </div>
   </div>
   <div class="md-stub">
@@ -164,27 +180,30 @@ Come on you Spurs. 🤍⚽️
 .md-season { display:flex; justify-content:space-between; align-items:baseline; margin:22px 0 10px; padding-bottom:6px; border-bottom:1px solid #eceef1; }
 .md-season span:first-child { font-weight:600; font-size:.95em; color:#333; }
 .md-count { font-size:.78em; color:#999; letter-spacing:.3px; }
-.md-item { --stub-w:150px; --c-home:110,120,135; --c-away:110,120,135; position:relative; display:flex; align-items:stretch; background:linear-gradient(100deg, rgba(var(--c-home),.13) 0%, rgba(var(--c-home),.045) 28%, rgba(255,255,255,.5) 50%, rgba(var(--c-away),.045) 72%, rgba(var(--c-away),.13) 100%); border:1px solid rgba(255,255,255,.65); border-radius:10px; overflow:hidden; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.05); transition:box-shadow .15s ease, transform .15s ease; }
+.md-item { --stub-w:150px; --c-home:110,120,135; --c-away:110,120,135; position:relative; display:flex; align-items:stretch; min-height:96px; background:linear-gradient(100deg, rgba(var(--c-home),.14) 0%, rgba(var(--c-home),.05) 28%, rgba(255,255,255,.5) 50%, rgba(var(--c-away),.05) 72%, rgba(var(--c-away),.14) 100%); border:1px solid rgba(255,255,255,.65); border-radius:10px; overflow:hidden; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.05); transition:box-shadow .15s ease, transform .15s ease; }
 .md-item:hover { box-shadow:0 3px 14px rgba(var(--c-home),.16), 0 3px 14px rgba(var(--c-away),.1); transform:translateY(-1px); }
-.md-wm { position:absolute; top:50%; transform:translateY(-50%); height:calc(100% - 14px); opacity:.18; pointer-events:none; z-index:0; transition:opacity .2s ease; }
-.md-item:hover .md-wm { opacity:.26; }
-.md-wm-home { left:12px; -webkit-mask-image:linear-gradient(to right, #000 55%, rgba(0,0,0,.4) 80%, transparent 100%); mask-image:linear-gradient(to right, #000 55%, rgba(0,0,0,.4) 80%, transparent 100%); }
-.md-wm-away { right:calc(var(--stub-w) + 12px); -webkit-mask-image:linear-gradient(to left, #000 55%, rgba(0,0,0,.4) 80%, transparent 100%); mask-image:linear-gradient(to left, #000 55%, rgba(0,0,0,.4) 80%, transparent 100%); }
-.md-crest.md-crest-txt { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; font-size:.55em; font-weight:700; color:#fff; border-radius:50%; background:linear-gradient(135deg, rgba(var(--c-home),.9), rgba(var(--c-away),.9)); letter-spacing:.3px; }
-.md-main { flex:1; padding:14px 18px; min-width:0; position:relative; z-index:1; text-align:center; }
-.md-top { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
-.md-date { font-size:.8em; color:#888; letter-spacing:.2px; }
-.md-chip { font-size:.72em; font-weight:600; padding:2px 8px; border-radius:20px; color:#fff; white-space:nowrap; }
+.md-main { flex:1; padding:14px 22px; min-width:0; position:relative; z-index:1; display:flex; flex-direction:column; justify-content:center; gap:9px; }
+.md-teams { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; }
+.md-side { display:flex; align-items:center; gap:10px; min-width:0; }
+.md-side-away { flex-direction:row-reverse; }
+.md-crest { flex:0 0 36px; width:36px; height:36px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.14); display:flex; align-items:center; justify-content:center; padding:4px; }
+.md-crest img { max-width:100%; max-height:100%; object-fit:contain; }
+.md-crest-tall img { max-height:118%; max-width:78%; }
+.md-team { font-size:.98em; font-weight:600; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.md-side-home .md-team { text-align:right; }
+.md-away { color:#555; }
+.md-score { font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace; font-size:1.22em; font-weight:700; background:rgba(255,255,255,.8); border:1px solid rgba(0,0,0,.06); border-radius:8px; padding:3px 14px; min-width:76px; text-align:center; color:#1a1a1a; }
+.md-dash { color:#bbb; }
+.md-meta { display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap; }
+.md-date { font-size:.78em; color:#888; }
+.md-chip { font-size:.72em; font-weight:600; padding:2px 9px; border-radius:20px; color:#fff; white-space:nowrap; }
 .md-chip-uel { background:#d9752f; }
 .md-chip-ucl { background:#1b3f7a; }
 .md-chip-pl  { background:#3d1e56; }
 .md-chip-fa  { background:#a52a3a; }
-.md-teams { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
-.md-team { font-size:.98em; font-weight:600; color:#222; }
-.md-away { color:#555; font-weight:500; }
-.md-score { font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace; font-size:1.15em; font-weight:700; background:#f5f7f9; border-radius:6px; padding:2px 10px; color:#1a1a1a; }
-.md-dash { color:#bbb; }
-.md-stub { position:relative; z-index:1; flex:0 0 150px; border-left:2px dashed rgba(210,216,224,.9); padding:14px 16px; background:linear-gradient(160deg, rgba(255,255,255,.55), rgba(var(--c-away),.06)); display:flex; flex-direction:column; justify-content:center; }
+.md-chip-nl  { background:#2c5aa0; }
+.md-chip-mls { background:#0f7a3d; }
+.md-stub { position:relative; z-index:1; flex:0 0 150px; border-left:2px dashed rgba(210,216,224,.9); padding:14px 16px; background:linear-gradient(160deg, rgba(255,255,255,.55), rgba(var(--c-away),.06)); display:flex; flex-direction:column; justify-content:center; text-align:center; }
 .md-stub::before, .md-stub::after { content:""; position:absolute; left:-9px; width:16px; height:16px; border-radius:50%; background:#fff; border:1px solid #e3e6ea; }
 .md-stub::before { top:-9px; }
 .md-stub::after { bottom:-9px; border-color:#e3e6ea; }
@@ -192,14 +211,15 @@ Come on you Spurs. 🤍⚽️
 .md-city { font-size:.78em; color:#888; margin-top:2px; }
 .md-seat { font-size:.74em; color:#aaa; margin-top:8px; }
 .md-item.md-empty { --c-home:160,168,180; --c-away:160,168,180; border-style:dashed; border-color:#d9dee4; }
-.md-empty-text { font-size:.9em; color:#999; font-style:italic; padding:6px 2px; }
+.md-empty-text { font-size:.9em; color:#999; font-style:italic; }
 @media (max-width: 600px) {
   .md-item { flex-direction:column; }
   .md-stub { flex:none; border-left:none; border-top:2px dashed rgba(210,216,224,.9); }
   .md-stub::before { left:auto; right:-9px; top:-9px; }
   .md-stub::after { display:none; }
-  .md-wm-away { right:12px; }
-  .md-score { font-size:1.05em; }
+  .md-score { font-size:1.05em; min-width:64px; }
+  .md-teams { gap:8px; }
+  .md-crest { flex-basis:30px; width:30px; height:30px; }
 }
 </style>
 
