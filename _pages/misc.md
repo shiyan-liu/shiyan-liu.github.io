@@ -23,7 +23,7 @@ author_profile: true
 </div>
 
 <style>
-.misc-hub { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:18px; max-width:820px; }
+.misc-hub { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; max-width:820px; }
 @media (max-width: 540px) { .misc-hub { grid-template-columns:1fr; } }
 .misc-card { display:block; border:1px solid #e3e6ea; border-radius:10px; padding:18px 20px; background:#fff; color:inherit; transition:box-shadow .15s ease, transform .15s ease; }
 .page__content a.misc-card, .page__content a.misc-card:hover, .page__content a.misc-card:visited { text-decoration:none; color:inherit; }
