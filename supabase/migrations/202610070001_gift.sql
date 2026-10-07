@@ -30,7 +30,7 @@ create table public.gift_guesses (
 );
 create table public.gift_credit_ledger (
  id bigint generated always as identity primary key, user_id uuid not null references public.gift_members(user_id),
- delta integer not null check(delta in (-1,1)), reason text not null check(reason in ('photo_upload','guess')),
+ delta integer not null check(delta in (-1,1,3)), reason text not null check(reason in ('photo_upload','guess','new_game')),
  reference_id uuid not null, created_at timestamptz not null default now(), unique(reason,reference_id)
 );
 create table public.gift_request_limits (
@@ -77,8 +77,8 @@ declare m gift_members; i gift_upload_intents; existing gift_photos; begin
  end if;
  insert into gift_photos(id,user_id,storage_path,image_hash) values(p_intent,p_user,p_path,p_hash);
  if m.role='player' then
-   update gift_members set balance=balance+1 where user_id=p_user returning * into m;
-   insert into gift_credit_ledger(user_id,delta,reason,reference_id) values(p_user,1,'photo_upload',p_intent);
+   update gift_members set balance=balance+3 where user_id=p_user returning * into m;
+   insert into gift_credit_ledger(user_id,delta,reason,reference_id) values(p_user,3,'photo_upload',p_intent);
  end if;
  update gift_upload_intents set finalized=true where id=p_intent;
  return jsonb_build_object('duplicate',false,'photo_id',p_intent,'balance',m.balance);
@@ -113,6 +113,9 @@ begin
  update gift_games set status='archived' where status='active';
  insert into gift_games(id,title) values(p_id,p_title);
  insert into gift_game_secrets values(p_id,p_answer,p_aliases,p_embedding,p_model,p_reveal,p_photo);
+ update gift_members set balance=balance+3 where role='player';
+ insert into gift_credit_ledger(user_id,delta,reason,reference_id)
+ select user_id,3,'new_game',p_id from gift_members where role='player';
  return p_id;
 end $$;
 

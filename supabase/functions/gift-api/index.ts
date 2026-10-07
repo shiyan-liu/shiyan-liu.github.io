@@ -20,17 +20,22 @@ async function embed(input: string, useModel = model): Promise<number[]> {
 async function signed(path: string) { return check(await bucket.createSignedUrl(path,600)).signedUrl; }
 async function state(user: string) {
  const member=check(await db.from('gift_members').select('balance').eq('user_id',user).single());
- const games=check(await db.from('gift_games').select('id,title,status,created_at').neq('status','archived').order('created_at',{ascending:false}).limit(1));
- const game=games[0]||null;
- const guesses=game?check(await db.from('gift_guesses').select('id,text,score,is_correct,created_at').eq('game_id',game.id).eq('user_id',user).order('created_at',{ascending:false}).limit(200)):[];
- let reveal=null;
- if(game&&['won','revealed'].includes(game.status)) {
-   const secret=check(await db.from('gift_game_secrets').select('answer,reveal_text,reveal_photo_id').eq('game_id',game.id).single());
+ const games=check(await db.from('gift_games').select('id,title,status,created_at').order('created_at',{ascending:false}));
+ const game=games.find(g=>g.status!=='archived')||null;
+ const allGuesses=check(await db.from('gift_guesses').select('id,game_id,text,score,is_correct,created_at').eq('user_id',user).order('created_at',{ascending:false}));
+ const guesses=game?allGuesses.filter(g=>g.game_id===game.id):[];
+ async function revealFor(item: {id:string;status:string}) {
+   if(!['won','revealed'].includes(item.status)) return null;
+   const secret=check(await db.from('gift_game_secrets').select('answer,reveal_text,reveal_photo_id').eq('game_id',item.id).single());
    let image=null;
    if(secret.reveal_photo_id) {const photo=check(await db.from('gift_photos').select('storage_path').eq('id',secret.reveal_photo_id).is('deleted_at',null).maybeSingle());if(photo)image=await signed(photo.storage_path);}
-   reveal={answer:secret.answer,text:secret.reveal_text,image};
+   return {answer:secret.answer,text:secret.reveal_text,image};
  }
- return {member,game,guesses,reveal};
+ const reveal=game?await revealFor(game):null;
+ const history=await Promise.all(games.filter(g=>g.id!==game?.id).map(async g=>({
+   ...g,guesses:allGuesses.filter(x=>x.game_id===g.id),reveal:await revealFor(g)
+ })));
+ return {member,game,guesses,reveal,history};
 }
 Deno.serve(async req=>{
  const origin = req.headers.get('Origin') || '';

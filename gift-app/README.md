@@ -1,6 +1,6 @@
 # Guess My Gift
 
-The public game is built into `../gift/` and linked from Miscellaneous. It accepts the player code `zz` and contains only upload, guessing, and reveal. The private album and gift management are served by `scripts/admin-console.mjs` on `127.0.0.1:5174`; they are never built into GitHub Pages.
+The public game is built into `../gift/` and accessed by direct URL. It accepts the player code `zz` and contains only upload, guessing, and reveal. The private album and gift management are served by `scripts/admin-console.mjs` on `127.0.0.1:5174`; they are never built into GitHub Pages.
 
 ## Local console
 
@@ -16,6 +16,8 @@ From this directory, run `pnpm build` (or `node scripts/build.mjs` after TypeScr
 
 The `gift-api` Edge Function is deployed to the configured Supabase project. Its encrypted secrets include `PLAYER_CODE`, `PLAYER_LOGIN_EMAIL`, `PLAYER_LOGIN_PASSWORD`, `LOGIN_RATE_SALT`, `EMBEDDING_MODEL`, and `ALLOWED_ORIGINS`; Supabase supplies its project URL, anon key, and service-role key to the function. Keep `ALLOWED_ORIGINS` to the homepage domain(s).
 
-The same scoring model is used when creating a gift in the local console and when scoring a guess in the Edge Function. `EMBEDDING_API_KEY` is required and the default provider model is `text-embedding-3-small`; both sides fail closed when it is missing. There is no heuristic fallback. Exact answers and aliases are matched before the embedding score. The built-in Supabase `gte-small` model is English-only, so it is unsuitable for the Chinese guessing experience.
+The same scoring model is used when creating a gift in the local console and when scoring a guess in the Edge Function. `EMBEDDING_API_KEY` is required and the configured provider model is `qwen/qwen3-embedding-8b` via OpenRouter; both sides fail closed when it is missing. There is no heuristic fallback. Exact answers and aliases are matched before the embedding score. The built-in Supabase `gte-small` model is English-only, so it is unsuitable for the Chinese guessing experience.
 
 The player code `zz` is intentionally short and can be guessed. It grants access to the game and photo upload, **not** the private album; the database tables have RLS with no browser-facing policies, and the bucket is private. If you later want to stop unauthorized uploads, replace `zz` with a longer phrase.
+
+Each new gift grants the player 3 guesses. Each distinct saved photo grants 3 more. Player and local console histories group guesses by gift.
