@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import {strict as assert} from 'node:assert';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const src=readFileSync(new URL('../../supabase/functions/gift-api/scoring.ts',import.meta.url),'utf8');
+const js=ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+const module={exports:{}};new Function('module','exports',js)(module,module.exports);
+const {normalize,similarity}=module.exports;
+test('equivalent Chinese answer forms normalize consistently',()=>{assert.equal(normalize(' 拍 立 得！'),'拍立得');assert.equal(normalize('ＡＢＣ'),normalize('abc'));});
+test('similarity is bounded and only exact match can receive 100',()=>{assert.equal(similarity([1,0],[1,0]),99);assert.equal(similarity([1,0],[-1,0]),0);assert.throws(()=>similarity([1],[1,2]));});

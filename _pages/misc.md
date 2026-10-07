@@ -16,6 +16,10 @@ author_profile: true
     <h2>📖 Notes</h2>
     <p class="desc">What failure really means, and the quiet case for always trying. Two short pieces I keep coming back to.</p>
   </a>
+  <a class="misc-card" href="/gift/">
+    <h2>🎁 Guess My Gift</h2>
+    <p class="desc">A little surprise, a shared moment. A private game for two — invitation only.</p>
+  </a>
 </div>
 
 <style>

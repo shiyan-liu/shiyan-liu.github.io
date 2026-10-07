@@ -1,3 +1,11 @@
 _site/
 push.sh
 .DS_Store
+
+# Private game configuration and local tooling
+gift-app/node_modules/
+gift-app/.env*
+supabase/.temp/
+supabase/.env*
+.sass-cache/
+.workbuddy/

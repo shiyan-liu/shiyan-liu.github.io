@@ -66,6 +66,10 @@ include:
   - _pages
   - files
 exclude:
+  - gift-app
+  - supabase
+  - start-gift-console.command
+  - .workbuddy
   - docs
   - google_scholar_crawler
   - "*.sublime-project"
