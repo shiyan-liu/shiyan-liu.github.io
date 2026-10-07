@@ -7,6 +7,12 @@ const model = Deno.env.get('EMBEDDING_MODEL') || 'text-embedding-3-small';
 function check<T>(result: {data:T;error:any}): T { if(result.error) throw result.error; return result.data; }
 function text(value: unknown, max: number) { if(typeof value !== 'string' || !value.trim() || value.trim().length>max) throw new Error('INVALID_INPUT'); return value.trim(); }
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
+const publicUrl='https://shiyanliu.com/gift/';
+function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get('GIFT_FROM_EMAIL');if(!key||!from)throw Error('MAIL_UNAVAILABLE');return {key,from};}
+async function sendMail(to:string,subject:string,body:string,idempotencyKey:string){const {key,from}=mailConfig();const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from,to:[to],subject,text:body}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
+
+async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
+function randomToken(){return Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function embed(input: string, useModel = model): Promise<number[]> {
  const key = Deno.env.get('EMBEDDING_API_KEY'); if(!key) throw new Error('EMBEDDING_UNAVAILABLE');
  const response = await fetch(Deno.env.get('EMBEDDING_API_URL') || 'https://api.openai.com/v1/embeddings', {
@@ -21,7 +27,7 @@ async function signed(path: string) { return check(await bucket.createSignedUrl(
 async function state(user: string) {
  const member=check(await db.from('gift_members').select('balance').eq('user_id',user).single());
  const games=check(await db.from('gift_games').select('id,title,status,created_at').order('created_at',{ascending:false}));
- const game=games.find(g=>g.status!=='archived')||null;
+ const game=games.find(g=>g.status==='active')||null;
  const allGuesses=check(await db.from('gift_guesses').select('id,game_id,text,score,is_correct,created_at').eq('user_id',user).order('created_at',{ascending:false}));
  const guesses=game?allGuesses.filter(g=>g.game_id===game.id):[];
  async function revealFor(item: {id:string;status:string}) {
@@ -35,7 +41,8 @@ async function state(user: string) {
  const history=await Promise.all(games.filter(g=>g.id!==game?.id).map(async g=>({
    ...g,guesses:allGuesses.filter(x=>x.game_id===g.id),reveal:await revealFor(g)
  })));
- return {member,game,guesses,reveal,history};
+ const subscription=check(await db.from('gift_email_subscriptions').select('email,status').eq('user_id',user).maybeSingle());
+ return {member,game,guesses,reveal,history,subscription,mailReady:!!Deno.env.get('RESEND_API_KEY')&&!!Deno.env.get('GIFT_FROM_EMAIL')};
 }
 Deno.serve(async req=>{
  const origin = req.headers.get('Origin') || '';
@@ -64,6 +71,20 @@ Deno.serve(async req=>{
    if(result.error||!result.data.session) return reply({error:'UNAUTHORIZED'},401);
    return reply({access_token:result.data.session.access_token,refresh_token:result.data.session.refresh_token});
  }
+ if(action==='subscription-link') {
+   const kind=text(body.kind,20),value=text(body.token,64);
+   if(!['confirm','unsubscribe'].includes(kind)||!/^[a-f0-9]{64}$/.test(value))throw Error('INVALID_INPUT');
+   const hash=await digest(value),column=kind==='confirm'?'confirm_hash':'unsubscribe_hash';
+   const sub=check(await db.from('gift_email_subscriptions').select('user_id,status').eq(column,hash).maybeSingle());
+   if(!sub)return reply({error:'LINK_EXPIRED'},400);
+   if(kind==='confirm') {
+     if(sub.status!=='pending')return reply({error:'LINK_EXPIRED'},400);
+     check(await db.from('gift_email_subscriptions').update({status:'active',confirmed_at:new Date().toISOString(),confirm_hash:null}).eq('user_id',sub.user_id).eq('confirm_hash',hash));
+   } else {
+     check(await db.from('gift_email_subscriptions').update({status:'unsubscribed',confirm_hash:null}).eq('user_id',sub.user_id).eq('unsubscribe_hash',hash));
+   }
+   return reply({status:kind==='confirm'?'active':'unsubscribed'});
+ }
  const token = req.headers.get('Authorization')?.replace(/^Bearer /i,'');
  if(!token) return reply({error:'UNAUTHORIZED'},401);
  const {data:{user},error} = await db.auth.getUser(token);
@@ -73,6 +94,24 @@ Deno.serve(async req=>{
  const limit = ['guess','upload-intent','finalize-upload'].includes(action)?12:60;
  if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='state') return reply(await state(user.id));
+ if(action==='subscribe') {
+   if(member.role!=='player')throw Error('FORBIDDEN');
+   mailConfig();
+   const email=text(body.email,254).toLowerCase();
+   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('INVALID_INPUT');
+   const confirm=randomToken(),unsubscribe=randomToken();
+   const result=check(await db.rpc('gift_prepare_subscription',{p_user:user.id,p_email:email,p_confirm_hash:await digest(confirm),p_unsubscribe_hash:await digest(unsubscribe)}));
+   if(result==='send') {
+     const link=`${publicUrl}?subscription=confirm&token=${confirm}`;
+     try {await sendMail(email,'确认订阅 · Guess My Gift',`请点击这个链接确认订阅新的小惊喜提醒：\n${link}\n\n如果不是你提交的邮箱，可以忽略这封邮件。`,`gift-confirm/${user.id}/${await digest(confirm)}`);}
+     catch(e) {await db.from('gift_email_subscriptions').update({last_confirmation_sent_at:new Date(Date.now()-3700000).toISOString()}).eq('user_id',user.id).eq('confirm_hash',await digest(confirm));throw Error('MAIL_UNAVAILABLE');}
+   }
+   return reply({status:result==='send'?'pending':result});
+ }
+ if(action==='unsubscribe') {
+   check(await db.from('gift_email_subscriptions').update({status:'unsubscribed',confirm_hash:null}).eq('user_id',user.id));
+   return reply({status:'unsubscribed'});
+ }
  if(action==='upload-intent') {
  const id=crypto.randomUUID(),path=`staging/${user.id}/${id}.jpg`;
  check(await db.from('gift_upload_intents').insert({id,user_id:user.id,path}));
@@ -130,9 +169,9 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH'];
+ const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'?503:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'?503:400);
  }
 });

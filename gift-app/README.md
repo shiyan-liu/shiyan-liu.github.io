@@ -21,3 +21,11 @@ The same scoring model is used when creating a gift in the local console and whe
 The player code `zz` is intentionally short and can be guessed. It grants access to the game and photo upload, **not** the private album; the database tables have RLS with no browser-facing policies, and the bucket is private. If you later want to stop unauthorized uploads, replace `zz` with a longer phrase.
 
 Each new gift grants the player 3 guesses. Each distinct saved photo grants 3 more. Player and local console histories group guesses by gift.
+
+## Email reminders
+
+The player can enter an email address in the Gift page. A confirmation email must be opened before the address becomes active. She can unsubscribe from the page or from any gift notification email. The address and confirmation tokens remain in private Supabase tables; only the subscription's own status is returned to the player.
+
+Resend sends the confirmation email from the Edge Function and new-gift reminders from the local console when a gift is saved. Configure `RESEND_API_KEY` and `GIFT_FROM_EMAIL` (for example `Guess My Gift <gift@shiyanliu.com>`) in both Supabase Edge Function secrets and `gift-app/.env.local`. The Resend domain must be verified before sending to arbitrary subscribers. Never put these values in `gift/config.js` or the public repository. Restart the local console after changing `.env.local`. The console records delivery status by gift and offers retry for failed sends; sent deliveries are skipped on retry.
+
+Database migration `202610070003_gift_email.sql` creates the private subscription and delivery tables. The subscription endpoint fails closed when the mail service is not configured. A finished gift is shown in the player's history while the main panel waits for the next surprise.
