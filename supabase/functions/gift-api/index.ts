@@ -4,16 +4,11 @@ const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SE
 const bucket = db.storage.from('gift-private');
 const origins = (Deno.env.get('ALLOWED_ORIGINS') || 'https://shiyanliu.com,https://shiyan-liu.github.io,http://127.0.0.1:5173').split(',');
 const model = Deno.env.get('EMBEDDING_MODEL') || 'text-embedding-3-small';
-function localEmbed(input: string): number[] {
- const text = normalize(input); const vector = Array.from({length:256},()=>0);
- for(let i=0;i<text.length;i++) { const a=text.charCodeAt(i), b=text.charCodeAt(i+1)||0; vector[(a*31+b*17+i)%256] += 1; }
- const norm=Math.sqrt(vector.reduce((s,x)=>s+x*x,0))||1; return vector.map(x=>x/norm);
-}
 function check<T>(result: {data:T;error:any}): T { if(result.error) throw result.error; return result.data; }
 function text(value: unknown, max: number) { if(typeof value !== 'string' || !value.trim() || value.trim().length>max) throw new Error('INVALID_INPUT'); return value.trim(); }
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
 async function embed(input: string, useModel = model): Promise<number[]> {
- const key = Deno.env.get('EMBEDDING_API_KEY'); if(!key) return localEmbed(input);
+ const key = Deno.env.get('EMBEDDING_API_KEY'); if(!key) throw new Error('EMBEDDING_UNAVAILABLE');
  const response = await fetch(Deno.env.get('EMBEDDING_API_URL') || 'https://api.openai.com/v1/embeddings', {
  method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${key}`},
  body:JSON.stringify({model:useModel,input}),signal:AbortSignal.timeout(20000)});
