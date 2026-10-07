@@ -103,7 +103,7 @@ Deno.serve(async req=>{
    const result=check(await db.rpc('gift_prepare_subscription',{p_user:user.id,p_email:email,p_confirm_hash:await digest(confirm),p_unsubscribe_hash:await digest(unsubscribe)}));
    if(result==='send') {
      const link=`${publicUrl}?subscription=confirm&token=${confirm}`;
-     try {await sendMail(email,'确认订阅 · Guess My Gift',`请点击这个链接确认订阅新的小惊喜提醒：\n${link}\n\n如果不是你提交的邮箱，可以忽略这封邮件。`,`gift-confirm/${user.id}/${await digest(confirm)}`);}
+     try {await sendMail(email,'请确认你的邮箱 · Guess My Gift',`想在新礼物藏好时收到我的小纸条吗？\n点一下这里，确认这真的是你的邮箱：\n\n${link}\n\n如果不是你留下的邮箱，就让这封信轻轻路过吧。`,`gift-confirm/${user.id}/${await digest(confirm)}`);}
      catch(e) {await db.from('gift_email_subscriptions').update({last_confirmation_sent_at:new Date(Date.now()-3700000).toISOString()}).eq('user_id',user.id).eq('confirm_hash',await digest(confirm));throw Error('MAIL_UNAVAILABLE');}
    }
    return reply({status:result==='send'?'pending':result});
