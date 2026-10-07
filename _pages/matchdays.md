@@ -50,7 +50,31 @@ Come on you Spurs. 🤍⚽️
 <div class="md-list" id="mdlog" markdown="0">
 
 <div class="md-group">
-<div class="md-season"><span>UEFA Nations League</span><span class="md-count">1 match</span></div>
+<div class="md-season"><span>UEFA Nations League</span><span class="md-count">2 matches</span></div>
+
+<div class="md-item" data-date="2026-10-06" style="--c-home:24,60,140;--c-away:20,60,120">
+  <div class="md-main">
+    <div class="md-teams">
+      <div class="md-side md-side-home">
+        <span class="md-crest"><img src="/images/crests/england.svg" alt="England"></span>
+        <span class="md-team">England</span>
+      </div>
+      <span class="md-score">3 <span class="md-dash">–</span> 0</span>
+      <div class="md-side md-side-away">
+        <span class="md-crest"><img src="/images/crests/czechia.svg" alt="Czech Republic"></span>
+        <span class="md-team md-away">Czech Republic</span>
+      </div>
+    </div>
+    <div class="md-meta">
+      <span class="md-date">Tue 6 Oct 2026</span>
+      <span class="md-chip md-chip-nl">Matchday 4</span>
+    </div>
+  </div>
+  <div class="md-stub">
+    <div class="md-ground">Wembley Stadium</div>
+    <div class="md-city">London, England</div>
+  </div>
+</div>
 
 <div class="md-item" data-date="2026-09-26" style="--c-home:24,60,140;--c-away:170,21,27">
   <div class="md-main">
