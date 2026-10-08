@@ -1,0 +1,46 @@
+-- Integration test: transactional fixtures, no email or model calls, rolled back.
+begin;
+do $$
+declare player_id uuid; admin_id uuid; game_id uuid:=gen_random_uuid(); whisper_id uuid; result jsonb; rejected boolean;
+begin
+ select user_id into player_id from public.gift_members where role='player' limit 1;
+ select user_id into admin_id from public.gift_members where role='admin' limit 1;
+ if player_id is null or admin_id is null then raise exception 'Missing members'; end if;
+ update public.gift_members set balance=0 where user_id=player_id;
+ perform public.gift_create(admin_id,game_id,'Transactional currency test','test answer',array[]::text[],array[0.0]::double precision[],'test-only','test reveal',null);
+ if (select balance from public.gift_members where user_id=player_id)<>5 then raise exception 'New gift must grant five beans'; end if;
+ perform public.gift_create(admin_id,game_id,'Transactional currency test','test answer',array[]::text[],array[0.0]::double precision[],'test-only','test reveal',null);
+ if (select balance from public.gift_members where user_id=player_id)<>5 then raise exception 'Duplicate gift credited twice'; end if;
+ result:=public.gift_guess(player_id,game_id,'test guess','test guess',12,false);
+ if (result->>'balance')::integer<>3 then raise exception 'Guess must cost two'; end if;
+ result:=public.gift_guess(player_id,game_id,'test guess','test guess',12,false);
+ if (result->>'balance')::integer<>3 or not (result->>'duplicate')::boolean then raise exception 'Duplicate guess charged twice'; end if;
+ insert into public.gift_whispers(game_id,user_id,message,model) values(game_id,player_id,'test interaction','test-only') returning id into whisper_id;
+ result:=public.gift_complete_whisper(player_id,whisper_id,'test reply',0,1,1);
+ if (result->>'balance')::integer<>2 then raise exception 'Whisper must cost one'; end if;
+ result:=public.gift_complete_whisper(player_id,whisper_id,'test reply',0,1,1);
+ if (result->>'balance')::integer<>2 or not (result->>'duplicate')::boolean then raise exception 'Duplicate whisper charged twice'; end if;
+ insert into public.gift_whispers(game_id,user_id,message,model,status) values(game_id,player_id,'failed model test','test-only','failed');
+ if (select balance from public.gift_members where user_id=player_id)<>2 then raise exception 'Failed call charged'; end if;
+ result:=public.gift_guess(player_id,game_id,'another guess','another guess',12,false);
+ if (result->>'balance')::integer<>0 then raise exception 'Mixed spend uses different balances'; end if;
+ rejected:=false;
+ begin perform public.gift_guess(player_id,game_id,'no beans','no beans',12,false);
+ exception when others then if sqlerrm='NO_CREDITS' then rejected:=true; else raise; end if; end;
+ if not rejected then raise exception 'Guess overdraft allowed'; end if;
+ insert into public.gift_whispers(game_id,user_id,message,model) values(game_id,player_id,'no beans','test-only') returning id into whisper_id;
+ rejected:=false;
+ begin perform public.gift_complete_whisper(player_id,whisper_id,'test reply',0,1,1);
+ exception when others then if sqlerrm='NO_CREDITS' then rejected:=true; else raise; end if; end;
+ if not rejected then raise exception 'Whisper overdraft allowed'; end if;
+ if (select balance from public.gift_members where user_id=player_id)<>0 then raise exception 'Failed deduction changed balance'; end if;
+ update public.gift_members set balance=1 where user_id=player_id;
+ rejected:=false;
+ begin perform public.gift_guess(player_id,game_id,'only one','only one',12,false);
+ exception when others then if sqlerrm='NO_CREDITS' then rejected:=true; else raise; end if; end;
+ if not rejected then raise exception 'One bean allowed a guess'; end if;
+ result:=public.gift_complete_whisper(player_id,whisper_id,'test reply',0,1,1);
+ if (result->>'balance')::integer<>0 then raise exception 'One bean did not allow whisper'; end if;
+ if has_function_privilege('authenticated','public.gift_complete_whisper(uuid,uuid,text,numeric,integer,integer)','execute') or has_function_privilege('anon','public.gift_complete_whisper(uuid,uuid,text,numeric,integer,integer)','execute') then raise exception 'Player can directly bypass model gate'; end if;
+end $$;
+rollback;

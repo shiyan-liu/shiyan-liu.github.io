@@ -115,6 +115,7 @@ Deno.serve(async req=>{
  if(action==='state') return reply(await state(user.id));
  if(action==='tease') {
   if(member.role!=='player')throw Error('FORBIDDEN');
+  if(member.balance<1)throw Error('NO_CREDITS');
   const gameId=uuid(body.gameId),message=text(body.message,160);
   const game=check(await db.from('gift_games').select('status').eq('id',gameId).maybeSingle());
   if(game?.status!=='active')throw Error('GAME_CHANGED');
@@ -129,11 +130,9 @@ Deno.serve(async req=>{
    if(!response.ok)throw Error('TEASE_UNAVAILABLE');const result=await response.json();
    if(result.choices?.[0]?.finish_reason!=='stop')throw Error('TEASE_UNAVAILABLE');
    const answer=validateTease(result.choices?.[0]?.message?.content,secret.answer,secret.aliases);
-   const current=check(await db.from('gift_games').select('status').eq('id',gameId).maybeSingle());if(current?.status!=='active')throw Error('GAME_CHANGED');
-   check(await db.from('gift_whispers').update({reply:answer,status:'completed',cost:result.usage?.cost??null,prompt_tokens:result.usage?.prompt_tokens??null,completion_tokens:result.usage?.completion_tokens??null}).eq('id',record.id));
-   return reply({reply:answer});
+   return reply(check(await db.rpc('gift_complete_whisper',{p_user:user.id,p_id:record.id,p_reply:answer,p_cost:result.usage?.cost??null,p_prompt_tokens:result.usage?.prompt_tokens??null,p_completion_tokens:result.usage?.completion_tokens??null})));
   } catch(error) {
-   check(await db.from('gift_whispers').update({status:'failed'}).eq('id',record.id));
+   check(await db.from('gift_whispers').update({status:'failed'}).eq('id',record.id).eq('status','pending'));
    throw error;
   }
  }
@@ -195,7 +194,7 @@ Deno.serve(async req=>{
  if(existing) return reply({guess:existing,balance:member.balance,duplicate:true});
  const game=check(await db.from('gift_games').select('status').eq('id',gameId).single());
  if(game.status!=='active') throw new Error('GAME_CHANGED');
- if(member.balance<1) throw new Error('NO_CREDITS');
+ if(member.balance<2) throw new Error('NO_CREDITS');
  const secret=check(await db.from('gift_game_secrets').select('answer,aliases,embedding,model').eq('game_id',gameId).single());
  const correct=[secret.answer,...secret.aliases].some(s=>normalize(s)===normalized);
  const score=correct?100:similarity(await embed(guess,secret.model),secret.embedding);
