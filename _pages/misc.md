@@ -16,6 +16,10 @@ author_profile: true
     <h2>📖 Notes</h2>
     <p class="desc">What failure really means, and the quiet case for always trying. Two short pieces I keep coming back to.</p>
   </a>
+  <a class="misc-card" href="/gift/">
+    <h2>🎁 和 zz 的专属空间</h2>
+    <p class="desc">小惊喜正在里面排队，暗号对上才开门。zz 请进，路过的朋友就当没看见啦。</p>
+  </a>
 </div>
 
 <style>
