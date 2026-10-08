@@ -17,8 +17,8 @@ author_profile: true
     <p class="desc">What failure really means, and the quiet case for always trying. Two short pieces I keep coming back to.</p>
   </a>
   <a class="misc-card" href="/gift/">
-    <h2>🎁 和 zz 的专属空间</h2>
-    <p class="desc">小惊喜正在里面排队，暗号对上才开门。zz 请进，路过的朋友就当没看见啦。</p>
+    <h2>🎁 A Little Space for zz &amp; Me</h2>
+    <p class="desc">Little surprises are lining up behind this door. Got the secret word, zz? Come on in. Everyone else: you saw nothing.</p>
   </a>
 </div>
 
