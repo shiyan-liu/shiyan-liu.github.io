@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
+import { TEASE_MODEL, teaseRequest, validateClue, validateTease } from './tease.mjs';
 import { validateMedia, parseVerification, verificationRequest } from './face-verification.mjs';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {auth:{persistSession:false}});
 const bucket = db.storage.from('gift-private');
@@ -45,6 +46,8 @@ async function state(user: string) {
  const games=check(await db.from('gift_games').select('id,title,status,created_at').order('created_at',{ascending:false}));
  const game=games.find(g=>g.status==='active')||null;
  const allGuesses=check(await db.from('gift_guesses').select('id,game_id,text,score,is_correct,created_at').eq('user_id',user).order('created_at',{ascending:false}));
+ const allWhispers=check(await db.from('gift_whispers').select('id,game_id,message,reply,status,created_at').eq('user_id',user).order('created_at',{ascending:false}));
+ const whispers=game?allWhispers.filter(w=>w.game_id===game.id):[];
  const guesses=game?allGuesses.filter(g=>g.game_id===game.id):[];
  async function revealFor(item: {id:string;status:string}) {
    if(!['won','revealed'].includes(item.status)) return null;
@@ -55,10 +58,10 @@ async function state(user: string) {
  }
  const reveal=game?await revealFor(game):null;
  const history=await Promise.all(games.filter(g=>g.id!==game?.id).map(async g=>({
-   ...g,guesses:allGuesses.filter(x=>x.game_id===g.id),reveal:await revealFor(g)
+   ...g,whispers:allWhispers.filter(x=>x.game_id===g.id),guesses:allGuesses.filter(x=>x.game_id===g.id),reveal:await revealFor(g)
  })));
  const subscription=check(await db.from('gift_email_subscriptions').select('email,status').eq('user_id',user).maybeSingle());
- return {member,game,guesses,reveal,history,subscription,mailReady:!!Deno.env.get('RESEND_API_KEY')&&!!Deno.env.get('GIFT_FROM_EMAIL')};
+ return {member,game,guesses,whispers,reveal,history,subscription,teaseReady:!!(Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY')),mailReady:!!Deno.env.get('RESEND_API_KEY')&&!!Deno.env.get('GIFT_FROM_EMAIL')};
 }
 Deno.serve(async req=>{
  const origin = req.headers.get('Origin') || '';
@@ -107,9 +110,34 @@ Deno.serve(async req=>{
  if(error||!user) return reply({error:'UNAUTHORIZED'},401);
  const {data:member,error:memberError} = await db.from('gift_members').select('*').eq('user_id',user.id).maybeSingle();
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
- const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
+ const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:action==='tease'?3:60;
  if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='state') return reply(await state(user.id));
+ if(action==='tease') {
+  if(member.role!=='player')throw Error('FORBIDDEN');
+  const gameId=uuid(body.gameId),message=text(body.message,160);
+  const game=check(await db.from('gift_games').select('status').eq('id',gameId).maybeSingle());
+  if(game?.status!=='active')throw Error('GAME_CHANGED');
+  const key=Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');if(!key)throw Error('TEASE_UNAVAILABLE');
+  const secret=check(await db.from('gift_game_secrets').select('answer,aliases,playful_hint').eq('game_id',gameId).single());
+  let clue;try{clue=validateClue(secret.playful_hint,secret.answer,secret.aliases);}catch{throw Error('TEASE_UNAVAILABLE');}
+  if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:'tease-daily',p_limit:20})))throw Error('TEASE_LIMIT');
+  const model=Deno.env.get('TEASE_MODEL')||TEASE_MODEL;
+  const record=check(await db.from('gift_whispers').insert({game_id:gameId,user_id:user.id,message,model}).select('id').single());
+  try {
+   const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':publicUrl,'X-Title':'Gift little whispers'},body:JSON.stringify(teaseRequest(message,clue,model)),signal:AbortSignal.timeout(20000)});
+   if(!response.ok)throw Error('TEASE_UNAVAILABLE');const result=await response.json();
+   if(result.choices?.[0]?.finish_reason!=='stop')throw Error('TEASE_UNAVAILABLE');
+   const answer=validateTease(result.choices?.[0]?.message?.content,secret.answer,secret.aliases);
+   const current=check(await db.from('gift_games').select('status').eq('id',gameId).maybeSingle());if(current?.status!=='active')throw Error('GAME_CHANGED');
+   check(await db.from('gift_whispers').update({reply:answer,status:'completed',cost:result.usage?.cost??null,prompt_tokens:result.usage?.prompt_tokens??null,completion_tokens:result.usage?.completion_tokens??null}).eq('id',record.id));
+   return reply({reply:answer});
+  } catch(error) {
+   check(await db.from('gift_whispers').update({status:'failed'}).eq('id',record.id));
+   throw error;
+  }
+ }
+
  // Detached browser-frame checks cannot authorize an upload.
  if(action==='face-check'||action==='upload-intent'||action==='finalize-upload')throw Error('INVALID_INPUT');
  if(action==='subscribe') {
@@ -176,9 +204,9 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE'];
+ const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'?503:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);
  }
 });
