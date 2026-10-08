@@ -9,6 +9,7 @@ function text(value: unknown, max: number) { if(typeof value !== 'string' || !va
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
 const publicUrl='https://shiyanliu.com/gift/';
 function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get('GIFT_FROM_EMAIL');if(!key||!from)throw Error('MAIL_UNAVAILABLE');return {key,from};}
+function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');if(!key)throw Error('FACE_UNAVAILABLE');return {key,model:Deno.env.get('VISION_MODEL')||'qwen/qwen2.5-vl-32b-instruct'};}
 async function sendMail(to:string,subject:string,body:string,idempotencyKey:string){const {key,from}=mailConfig();const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from,to:[to],subject,text:body}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
 
 async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -24,6 +25,16 @@ async function embed(input: string, useModel = model): Promise<number[]> {
  return vector;
 }
 async function signed(path: string) { return check(await bucket.createSignedUrl(path,600)).signedUrl; }
+function dataUrl(bytes:Uint8Array,mime:string){let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return `data:${mime};base64,${btoa(binary)}`;}
+async function faceCheck(frames:string[]){
+ if(!Array.isArray(frames)||frames.length<1||frames.length>6||frames.some(x=>typeof x!=='string'||x.length>5_000_000))throw Error('INVALID_MEDIA');
+ const ref=check(await db.from('gift_face_reference').select('storage_path,mime_type').eq('id',true).maybeSingle());if(!ref)throw Error('FACE_REFERENCE_MISSING');
+ const blob=check(await bucket.download(ref.storage_path));const reference=dataUrl(new Uint8Array(await blob.arrayBuffer()),ref.mime_type||'image/jpeg');
+ const {key,model}=visionConfig();const content:any[]=[{type:'text',text:'Compare the person in the reference image with every candidate frame. Return JSON only: {"match":true|false,"confidence":0..1,"reason":"short"}. Match only if the same person is clearly present; glasses, hair, pose, lighting and expression may change. If no clear face or multiple uncertain people, match=false.'},{type:'image_url',image_url:{url:reference}}];
+ for(const frame of frames)content.push({type:'image_url',image_url:{url:frame}});
+ const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':'https://shiyanliu.com/gift/','X-Title':'Guess My Gift face check'},body:JSON.stringify({model,messages:[{role:'user',content}],temperature:0,max_tokens:120}),signal:AbortSignal.timeout(30000)});
+ if(!response.ok)throw Error('FACE_UNAVAILABLE');const result=await response.json();const raw=result.choices?.[0]?.message?.content;if(typeof raw!=='string')throw Error('FACE_UNAVAILABLE');const json=raw.match(/\{[\s\S]*\}/)?.[0];if(!json)throw Error('FACE_UNAVAILABLE');let parsed:any;try{parsed=JSON.parse(json);}catch{throw Error('FACE_UNAVAILABLE');}if(parsed.match!==true||Number(parsed.confidence)<0.82)throw Error('FACE_MISMATCH');return {confidence:Number(parsed.confidence)};
+}
 async function state(user: string) {
  const member=check(await db.from('gift_members').select('balance').eq('user_id',user).single());
  const games=check(await db.from('gift_games').select('id,title,status,created_at').order('created_at',{ascending:false}));
@@ -91,9 +102,10 @@ Deno.serve(async req=>{
  if(error||!user) return reply({error:'UNAUTHORIZED'},401);
  const {data:member,error:memberError} = await db.from('gift_members').select('*').eq('user_id',user.id).maybeSingle();
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
- const limit = ['guess','upload-intent','finalize-upload'].includes(action)?12:60;
+ const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='state') return reply(await state(user.id));
+ if(action==='face-check') { if(member.role!=='player')throw Error('FORBIDDEN'); return reply(await faceCheck(body.frames)); }
  if(action==='subscribe') {
    if(member.role!=='player')throw Error('FORBIDDEN');
    mailConfig();
@@ -117,6 +129,15 @@ Deno.serve(async req=>{
  check(await db.from('gift_upload_intents').insert({id,user_id:user.id,path}));
  const upload=check(await bucket.createSignedUploadUrl(path));
  return reply({id,path,token:upload.token});
+ }
+ if(action==='media-upload-intent') {
+  const mime=text(body.mime,30);if(!['image/jpeg','video/mp4','video/webm'].includes(mime))throw Error('INVALID_MEDIA');
+  const id=crypto.randomUUID(),path=`media/${user.id}/${id}`;check(await db.from('gift_upload_intents').insert({id,user_id:user.id,path}));const upload=check(await bucket.createSignedUploadUrl(path));return reply({id,path,token:upload.token,mime});
+ }
+ if(action==='finalize-media') {
+  const id=uuid(body.id),mime=text(body.mime,30);if(!['image/jpeg','video/mp4','video/webm'].includes(mime))throw Error('INVALID_MEDIA');
+  const intent=check(await db.from('gift_upload_intents').select('*').eq('id',id).eq('user_id',user.id).single());if(Date.parse(intent.created_at)<Date.now()-7200000)throw Error('UPLOAD_EXPIRED');
+  const blob=check(await bucket.download(intent.path));if(blob.size<16||blob.size>52428800)throw Error('INVALID_MEDIA');const bytes=new Uint8Array(await blob.arrayBuffer());const hash=await digest(Array.from(bytes).join(','));const path=`media/${user.id}/${id}`;const result:any=check(await db.rpc('gift_finalize_media',{p_user:user.id,p_id:id,p_hash:hash,p_path:path,p_mime:mime}));await db.from('gift_upload_intents').update({finalized:true}).eq('id',id);return reply(result);
  }
  if(action==='finalize-upload') {
  const id=uuid(body.id);
@@ -169,9 +190,9 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE'];
+ const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'?503:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'?503:400);
  }
 });
