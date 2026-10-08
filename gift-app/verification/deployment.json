@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-08",
+  "scope": "Deployment and access-control verification; no real-person identity comparison executed",
+  "edge_function_deployed": true,
+  "migration_applied": true,
+  "vision_model": "qwen/qwen3.5-plus-20260420",
+  "model_connectivity": {
+    "http": 200,
+    "response": {
+      "ok": true
+    },
+    "input": "text-only"
+  },
+  "reference_configured": false,
+  "checks": {
+    "anonymous_state_http": 401,
+    "player_entry_http": 200,
+    "state_http": 200,
+    "history_available": true,
+    "legacy_face_check_http": 400,
+    "legacy_upload_intent_http": 400,
+    "legacy_finalize_upload_http": 400,
+    "missing_reference_error": "FACE_REFERENCE_MISSING",
+    "anonymous_reference_access_error": "42501",
+    "anonymous_media_access_error": "42501"
+  },
+  "unit_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "real_world_face_accuracy_tested": false
+}
