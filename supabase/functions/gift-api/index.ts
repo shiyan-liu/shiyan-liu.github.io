@@ -128,7 +128,15 @@ Deno.serve(async req=>{
    if(!response.ok)throw Error('TEASE_UNAVAILABLE');const result=await response.json();
    if(result.choices?.[0]?.finish_reason!=='stop')throw Error('TEASE_UNAVAILABLE');
    const answer=validateTease(result.choices?.[0]?.message?.content,secret.answer,secret.aliases);
-   return reply(check(await db.rpc('gift_complete_whisper',{p_user:user.id,p_id:record.id,p_reply:answer,p_cost:result.usage?.cost??null,p_prompt_tokens:result.usage?.prompt_tokens??null,p_completion_tokens:result.usage?.completion_tokens??null})));
+   const completed=check(await db.rpc('gift_complete_whisper',{p_user:user.id,p_id:record.id,p_reply:answer,p_cost:result.usage?.cost??null,p_prompt_tokens:result.usage?.prompt_tokens??null,p_completion_tokens:result.usage?.completion_tokens??null}));
+   // Reconcile older deployments where the RPC completed the whisper but did not write its ledger entry.
+   const charge=check(await db.from('gift_credit_ledger').select('id').eq('reference_id',record.id).eq('reason','tease').maybeSingle());
+   if(!charge){
+    const updated=check(await db.from('gift_members').update({balance:member.balance-1}).eq('user_id',user.id).gte('balance',1).select('balance').single());
+    check(await db.from('gift_credit_ledger').insert({user_id:user.id,delta:-1,reason:'tease',reference_id:record.id}));
+    return reply({...completed,balance:updated.balance});
+   }
+   return reply(completed);
   } catch(error) {
    check(await db.from('gift_whispers').update({status:'failed'}).eq('id',record.id).eq('status','pending'));
    throw error;
