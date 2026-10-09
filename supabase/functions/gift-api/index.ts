@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
-import { TEASE_MODEL, teaseRequest, validateClue, validateTease } from './tease.mjs';
+import { TEASE_MODEL, teaseRequest, validateTease } from './tease.mjs';
 import { validateMedia, parseVerification, verificationRequest } from './face-verification.mjs';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {auth:{persistSession:false}});
 const bucket = db.storage.from('gift-private');
@@ -110,23 +110,21 @@ Deno.serve(async req=>{
  if(error||!user) return reply({error:'UNAUTHORIZED'},401);
  const {data:member,error:memberError} = await db.from('gift_members').select('*').eq('user_id',user.id).maybeSingle();
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
- const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:action==='tease'?3:60;
- if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
+ const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
+ if(action!=='tease' && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='state') return reply(await state(user.id));
  if(action==='tease') {
   if(member.role!=='player')throw Error('FORBIDDEN');
   if(member.balance<1)throw Error('NO_CREDITS');
   const gameId=uuid(body.gameId),message=text(body.message,160);
-  const game=check(await db.from('gift_games').select('status').eq('id',gameId).maybeSingle());
+  const game=check(await db.from('gift_games').select('status,title').eq('id',gameId).maybeSingle());
   if(game?.status!=='active')throw Error('GAME_CHANGED');
   const key=Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');if(!key)throw Error('TEASE_UNAVAILABLE');
-  const secret=check(await db.from('gift_game_secrets').select('answer,aliases,playful_hint').eq('game_id',gameId).single());
-  let clue;try{clue=validateClue(secret.playful_hint,secret.answer,secret.aliases);}catch{throw Error('TEASE_UNAVAILABLE');}
-  if(!check(await db.rpc('gift_rate',{p_user:user.id,p_action:'tease-daily',p_limit:20})))throw Error('TEASE_LIMIT');
+  const secret=check(await db.from('gift_game_secrets').select('answer,aliases').eq('game_id',gameId).single());
   const model=Deno.env.get('TEASE_MODEL')||TEASE_MODEL;
   const record=check(await db.from('gift_whispers').insert({game_id:gameId,user_id:user.id,message,model}).select('id').single());
   try {
-   const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':publicUrl,'X-Title':'Gift little whispers'},body:JSON.stringify(teaseRequest(message,clue,model)),signal:AbortSignal.timeout(20000)});
+   const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':publicUrl,'X-Title':'Gift little whispers'},body:JSON.stringify(teaseRequest(message,{title:game.title,answer:secret.answer},model)),signal:AbortSignal.timeout(20000)});
    if(!response.ok)throw Error('TEASE_UNAVAILABLE');const result=await response.json();
    if(result.choices?.[0]?.finish_reason!=='stop')throw Error('TEASE_UNAVAILABLE');
    const answer=validateTease(result.choices?.[0]?.message?.content,secret.answer,secret.aliases);
