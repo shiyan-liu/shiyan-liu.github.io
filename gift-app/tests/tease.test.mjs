@@ -16,3 +16,9 @@ test('empty or runaway replies fail closed',()=>{
   for(const raw of [null,'','x'.repeat(181)])assert.throws(()=>validateTease(raw,'礼物'),/TEASE_UNAVAILABLE/);
   assert.equal(validateTease('你再眨眨眼，礼物盒都快心软了。','巧克力'),'你再眨眨眼，礼物盒都快心软了。');
 });
+
+test('whispers remove emoji without removing ordinary numbers or text',()=>{
+  assert.equal(validateTease('出门时别落下小配角。🧳🩷👍🏽🇨🇳1️⃣','巧克力'),'出门时别落下小配角。');
+  assert.equal(validateTease('给你留1点小线索。','巧克力'),'给你留1点小线索。');
+  assert.throws(()=>validateTease('🩷','巧克力'),/TEASE_UNAVAILABLE/);
+});
