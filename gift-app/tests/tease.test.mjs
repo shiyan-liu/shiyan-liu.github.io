@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {teaseRequest,validateClue,validateTease} from '../../supabase/functions/gift-api/tease.mjs';
-test('the model sees only the approved hint and bounded interaction, never a secret argument',()=>{
-  const request=teaseRequest('拜托啦🥺','它会让普通的一天有点不同。');
+test('the actual gift context reaches the model without a manual clue',()=>{
+  const request=teaseRequest('拜托啦🥺',{title:'一份惊喜',answer:'巧克力'});
   assert.equal(request.provider.allow_fallbacks,false);
   assert.equal(request.reasoning.enabled,false);
-  assert.deepEqual(JSON.parse(request.messages[1].content),{approved_hint:'它会让普通的一天有点不同。',interaction:'拜托啦🥺'});
+  assert.deepEqual(JSON.parse(request.messages[1].content),{gift_context:{title:'一份惊喜',answer:'巧克力'},interaction:'拜托啦🥺'});
 });
 test('literal answer and alias disclosures are rejected despite punctuation',()=>{
   assert.throws(()=>validateClue('就是巧，克，力。','巧克力'),/CLUE_TOO_CLEAR/);

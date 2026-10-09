@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-09",
+  "root_cause": "Deployed entrypoint bundled an older teaseRequest with approved_hint; separately edited module was not imported.",
+  "deployment": "Complete bundle from current index.ts and imported modules deployed through native Chrome Supabase Code editor.",
+  "checks": {
+    "live_api_requests": 4,
+    "live_browser_requests": 1,
+    "saved_completed_records": 5,
+    "hearts_charged": 5,
+    "direct_answer_returned": false,
+    "manual_clue_required": false
+  },
+  "bundle_sha256": "bc25ca47741ce7b9231e04242d05335d451cb249d648097bc54538a16a0ace03",
+  "limitations": "Subtlety is assessed from sampled responses; generation quality varies."
+}
