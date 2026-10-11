@@ -48,6 +48,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 .page__content a.cite-10 { --l:46%; --fg:#ffffff; }
 .cite-none { --l:96%; color:#aab0b8; background:#f6f7f8; border-color:#e6e9ec; }
 .pub-date { display:inline-block; width:64px; }
+.award-note { display:block; font-size:.85em; color:#8a9199; margin:1px 0 4px; }
 </style>
 <div class="ri-box" style="display:inline-block;background:#eaf3fb;border-radius:5px;padding:7px 12px 1px;margin:14px 0;max-width:100%;overflow-x:auto">
   <div style="font-weight:700;color:#1a6fa8;font-size:0.88em;margin-bottom:2px">🔬 Research Interests &nbsp;<span style="font-weight:normal;font-style:italic;color:#333">Finding the right answer — and knowing it's right — across graphs, documents, and language.</span></div>
@@ -138,6 +139,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 
 # 🎖 Honors and Awards
 - *2026.06* Outstanding Undergraduate Thesis (HUST).
+  <span class="award-note">Thesis: Deep reinforcement learning with view representation for path planning</span>
 - *2026.04* Outstanding Graduate (HUST).
 - *2025.09* National Scholarship. 
 - *2025.09* Outstanding Student Scholarship (HUST).
