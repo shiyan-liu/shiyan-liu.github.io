@@ -30,6 +30,25 @@ Outside of research, I love playing football and have proudly been a devoted Tot
   .ri-box { display:block !important; overflow-x:hidden !important; }
   .ri-box td { white-space:normal !important; }
 }
+/* citation badges — rendered locally, no third-party images.
+   One hue, deepening as citations grow: lower --l = darker. */
+.cite-badge { --h:212; --s:63%; --l:94%; --fg:#1c4f96;
+  display:inline-block; box-sizing:border-box; width:64px; text-align:center;
+  font-size:.72em; font-weight:600; padding:2px 4px; margin-right:9px; border-radius:11px;
+  border:1px solid hsl(var(--h), var(--s), calc(var(--l) - 15%));
+  background:linear-gradient(135deg, hsl(var(--h), var(--s), var(--l)), hsl(var(--h), var(--s), calc(var(--l) - 10%)));
+  color:var(--fg); white-space:nowrap; line-height:1.55; vertical-align:1px; transition:filter .15s ease; }
+.page__content a.cite-badge { text-decoration:none; }
+.page__content a.cite-badge:hover { text-decoration:none; filter:brightness(.94); }
+.cite-badge b { font-size:1.2em; font-weight:700; }
+.page__content a.cite-1  { --l:95%; --fg:#1c4f96; }
+.page__content a.cite-2  { --l:88%; --fg:#173f7d; }
+.page__content a.cite-3  { --l:80%; --fg:#123164; }
+.page__content a.cite-45 { --l:71%; --fg:#0e2750; }
+.page__content a.cite-69 { --l:59%; --fg:#ffffff; }
+.page__content a.cite-10 { --l:46%; --fg:#ffffff; }
+.cite-none { --l:96%; color:#aab0b8; background:#f6f7f8; border-color:#e6e9ec; }
+.pub-date { display:inline-block; width:64px; }
 </style>
 <div class="ri-box" style="display:inline-block;background:#eaf3fb;border-radius:5px;padding:7px 12px 1px;margin:14px 0;max-width:100%;overflow-x:auto">
   <div style="font-weight:700;color:#1a6fa8;font-size:0.88em;margin-bottom:2px">🔬 Research Interests &nbsp;<span style="font-weight:normal;font-style:italic;color:#333">Finding the right answer — and knowing it's right — across graphs, documents, and language.</span></div>
@@ -106,17 +125,17 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 
 # 📝 Publications
 
-- [2026.09] **<u>Liu, S.</u>** **The Deadline Effect: Identifying and Correcting Temporal Bias in Human Evaluation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">NeurIPS 2026</span> [paper]
-- [2026.09] **<u>Liu, S.</u>**, Qu, R. **Positive-Unlabeled Contrastive Retrieval for Graduate Program Recommendation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">AACL-IJCNLP 2026</span> [paper]
-- [2026.04] **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">KnowFM @ ACL 2026</span> [[paper](https://arxiv.org/abs/2606.01070)]
-- [2026.04] **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. **Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">ACL 2026 SRW</span> [[paper](https://arxiv.org/abs/2603.18388)] [![citations](https://img.shields.io/badge/citations-3-orange)](https://scholar.google.com/scholar?q=Reflection+in+the+Dark+Exposing+and+Escaping+the+Black+Box+in+Reflective+Prompt+Optimization)
-- [2025.11] **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">ResponsibleFM @ NeurIPS 2025</span> [[paper](https://arxiv.org/abs/2512.22629)] [[code](https://github.com/shiyan-liu/DICE)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=DICE+Discrete+Interpretable+Comparative+Evaluation+Probabilistic+Scoring+Retrieval-Augmented+Generation)
+- <span class="pub-date">[2026.09]</span> <span class="cite-badge cite-none" title="No citations recorded yet">—</span> **<u>Liu, S.</u>** **The Deadline Effect: Identifying and Correcting Temporal Bias in Human Evaluation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">NeurIPS 2026</span> [paper]
+- <span class="pub-date">[2026.09]</span> <span class="cite-badge cite-none" title="No citations recorded yet">—</span> **<u>Liu, S.</u>**, Qu, R. **Positive-Unlabeled Contrastive Retrieval for Graduate Program Recommendation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">AACL-IJCNLP 2026</span> [paper]
+- <span class="pub-date">[2026.04]</span> <span class="cite-badge cite-none" title="No citations recorded yet">—</span> **<u>Liu, S.</u>**, Li, Y. **Test-Time Training for Zero-Resource Dense Retrieval Reranking**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">KnowFM @ ACL 2026</span> [[paper](https://arxiv.org/abs/2606.01070)]
+- <span class="pub-date">[2026.04]</span> <a class="cite-badge cite-3" href="https://scholar.google.com/scholar?q=Reflection+in+the+Dark+Exposing+and+Escaping+the+Black+Box+in+Reflective+Prompt+Optimization" title="Cited by 3 on Google Scholar"><b>3</b> cites</a> **<u>Liu, S.</u>**, Xia, Q., Xia, Q., Liu, Y., Yu, X. & Qu, R. **Reflection in the Dark: Exposing and Escaping the Black Box in Reflective Prompt Optimization**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">ACL 2026 SRW</span> [[paper](https://arxiv.org/abs/2603.18388)]
+- <span class="pub-date">[2025.11]</span> <a class="cite-badge cite-1" href="https://scholar.google.com/scholar?q=DICE+Discrete+Interpretable+Comparative+Evaluation+Probabilistic+Scoring+Retrieval-Augmented+Generation" title="Cited by 1 on Google Scholar"><b>1</b> cites</a> **<u>Liu, S.</u>**, Ma, J., & Qu, R. **DICE: Discrete Interpretable Comparative Evaluation with Probabilistic Scoring for Retrieval-Augmented Generation**. <span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:3px 9px;font-size:0.85em;font-weight:600;letter-spacing:0.2px;white-space:nowrap">ResponsibleFM @ NeurIPS 2025</span> [[paper](https://arxiv.org/abs/2512.22629)] [[code](https://github.com/shiyan-liu/DICE)]
 
 # 📄 Preprints & Under Review
 
-- [2026] **<u>Liu, S.</u>**, Tan, B., Wu, Y., & Jin, Y. **MViewRouter: Internalizing Geometric Equivariance via Multi-view Alternating Attention for Combinatorial Routing**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">Under Review</span> [[paper](https://arxiv.org/abs/2606.01084)]
-- [2025] **<u>Liu, S.</u>**, Tan, B., Cao, Z., & Jin, Y. **VAGPO: Vision-augmented Asymmetric Group Preference Optimization for Graph Routing Problems**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">Under Review</span> [[paper](https://arxiv.org/abs/2508.01774)] [![citations](https://img.shields.io/badge/citations-2-blue)](https://scholar.google.com/scholar?q=VAGPO+Vision-augmented+Asymmetric+Group+Preference+Optimization+for+Graph+Routing+Problems)
-- [2025] **<u>Liu, S.</u>**, Qu, R., & Jin, Y. **FluentLip: A Phonemes-Based Two-stage Approach for Audio-Driven Lip Synthesis with Optical Flow Consistency**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">arXiv Preprint</span> [[paper](https://arxiv.org/abs/2504.04427)] [![citations](https://img.shields.io/badge/citations-1-blue)](https://scholar.google.com/scholar?q=FluentLip+A+Phonemes-Based+Two-stage+Approach+for+Audio-Driven+Lip+Synthesis+with+Optical+Flow+Consistency)
+- <span class="pub-date">[2026]</span> <span class="cite-badge cite-none" title="No citations recorded yet">—</span> **<u>Liu, S.</u>**, Tan, B., Wu, Y., & Jin, Y. **MViewRouter: Internalizing Geometric Equivariance via Multi-view Alternating Attention for Combinatorial Routing**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">Under Review</span> [[paper](https://arxiv.org/abs/2606.01084)]
+- <span class="pub-date">[2025]</span> <a class="cite-badge cite-2" href="https://scholar.google.com/scholar?q=VAGPO+Vision-augmented+Asymmetric+Group+Preference+Optimization+for+Graph+Routing+Problems" title="Cited by 2 on Google Scholar"><b>2</b> cites</a> **<u>Liu, S.</u>**, Tan, B., Cao, Z., & Jin, Y. **VAGPO: Vision-augmented Asymmetric Group Preference Optimization for Graph Routing Problems**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">Under Review</span> [[paper](https://arxiv.org/abs/2508.01774)]
+- <span class="pub-date">[2025]</span> <a class="cite-badge cite-1" href="https://scholar.google.com/scholar?q=FluentLip+A+Phonemes-Based+Two-stage+Approach+for+Audio-Driven+Lip+Synthesis+with+Optical+Flow+Consistency" title="Cited by 1 on Google Scholar"><b>1</b> cites</a> **<u>Liu, S.</u>**, Qu, R., & Jin, Y. **FluentLip: A Phonemes-Based Two-stage Approach for Audio-Driven Lip Synthesis with Optical Flow Consistency**. <span style="background:#f5f5f5;color:#777;border-radius:3px;padding:2px 7px;font-size:0.82em;white-space:nowrap">arXiv Preprint</span> [[paper](https://arxiv.org/abs/2504.04427)]
 
 # 🎖 Honors and Awards
 - *2026.06* Outstanding Undergraduate Thesis (HUST).
