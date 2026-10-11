@@ -139,7 +139,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
 
 # 🎖 Honors and Awards
 - *2026.06* Outstanding Undergraduate Thesis (HUST).
-  <span class="award-note">Thesis: Deep reinforcement learning with view representation for path planning</span>
+  <span class="award-note">Thesis: Deep reinforcement learning with view representation for combinatorial routing</span>
 - *2026.04* Outstanding Graduate (HUST).
 - *2025.09* National Scholarship. 
 - *2025.09* Outstanding Student Scholarship (HUST).
