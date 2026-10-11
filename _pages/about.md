@@ -110,7 +110,7 @@ Outside of research, I love playing football and have proudly been a devoted Tot
   <img src="/images/icons/hust-icon.png" style="height:36px;width:36px;object-fit:contain;margin-right:12px;flex-shrink:0;">
   <div>
     <strong>Reinforcement Learning & Intelligent Computing Group, HUST</strong><br>
-    <span style="color:#555">Research Assistant · Fortunately advised by <a href="https://scholar.google.com/citations?user=joz7edsAAAAJ">Prof. Yan Jin</a></span> <span style="color:#888">· 2024.06 - now</span> <span style="color:#bbb">· Wuhan, China</span>
+    <span style="color:#555">Research Assistant · Fortunately advised by <a href="https://scholar.google.com/citations?user=joz7edsAAAAJ">Prof. Yan Jin</a></span> <span style="color:#888">· 2024.06 - 2026.06</span> <span style="color:#bbb">· Wuhan, China</span>
   </div>
 </div>
 
