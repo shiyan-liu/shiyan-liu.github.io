@@ -1,0 +1,18 @@
+.mood-shell-confirmed{max-width:560px;padding-top:36px}
+.mood-shell-confirmed .back-link{margin-bottom:24px}
+.mood-shell-confirmed .mood-eyebrow{display:block;margin-bottom:14px}
+.mood-letter{padding:30px 34px;border:1px solid #ecdfe6;border-radius:16px;background:#fffafd;box-shadow:0 8px 30px #724d5f07;animation:letter-arrive .25s ease-out}
+.mood-letter-heart{display:block;font-size:29px;margin-bottom:18px;line-height:1}
+.mood-letter h1{font-family:inherit;font-size:27px;letter-spacing:-.025em;margin:0 0 22px}
+.mood-letter p{font-size:14px;line-height:1.9;margin:0 0 15px}
+.mood-letter .mood-letter-close{color:#7b6872;margin-top:22px}
+.mood-letter .mood-letter-signature{font-size:12px;color:#957285;margin-top:28px;margin-bottom:0}
+.mood-mail-status{display:flex;align-items:center;gap:11px;padding:17px 4px;color:#71866e}
+.mood-mail-status>svg{flex:none}.mood-mail-status>svg:last-child{margin-left:auto}
+.mood-mail-status strong,.mood-mail-status span{display:block}
+.mood-mail-status strong{font-weight:500;font-size:12px;margin-bottom:4px}
+.mood-mail-status span{font-size:11px;color:#93878d;line-height:1.5}
+.mood-again{background:none;border:0;border-bottom:1px solid #d6bdca;color:#967589;padding:5px 0;font-size:12px;margin-top:7px;cursor:pointer}
+@keyframes letter-arrive{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:580px){.mood-shell-confirmed{padding-top:26px}.mood-letter{padding:25px 23px}.mood-letter h1{font-size:25px}.mood-letter p{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.mood-letter{animation:none}}

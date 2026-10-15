@@ -18,10 +18,10 @@ function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get
 function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');const model=Deno.env.get('VISION_MODEL');if(!key||!model)throw Error('FACE_UNAVAILABLE');return {key,model};}
 async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const address=emailFrom(from);const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:address?`最爱你的男朋友 <${address}>`:from,to:[to],subject,text:body,...(html?{html}:{})}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
 function emailFrom(value:string|undefined){const found=(value||'').match(/<([^>]+)>/)||(value||'').match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);return found?.[1]||found?.[0]||null;}
-function ownerEmail(){return emailFrom(Deno.env.get('MOOD_OWNER_EMAIL')||Deno.env.get('GIFT_OWNER_EMAIL'))||'shyliu.china@gmail.com';}
+function ownerEmail(){return 'shyliu.china@gmail.com';}
 function beijingDate(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const part=(type:string)=>parts.find(x=>x.type===type)?.value;return `${part('year')}-${part('month')}-${part('day')}`;}
 function reminderHtml(token:string){const buttons=(Object.entries(moodOptions) as [Mood,(typeof moodOptions)[Mood]][]).map(([id,item])=>`<a href="${moodUrl}?mood=${id}&token=${token}" style="display:block;margin:10px 0;padding:13px 16px;border:1px solid #eadde4;border-radius:10px;color:#5f4756;text-decoration:none;font-size:15px">${item.label}</a>`).join('');return `<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">早安呀，今天还好吗？</h1><p>如果愿意的话，把今天的一点心情交给我吧。你不用把所有事情都说清楚，轻轻点一下就够了。</p>${buttons}<p style="margin-top:22px;color:#766670">如果今天不想选，也没关系。<br>不用回复，也不用解释。今天就按自己的节奏来。</p><p style="color:#766670">我在这里，愿今天对你轻一点。💗</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;}
-async function sendMoodMail(userId:string,email:string,mood:Mood,key:string){const item=moodOptions[mood];const body=`我看到啦。\n\n今天的你是「${item.label}」。${item.comfort}\n\n不用急着变好，也不用急着说什么。我会在这里陪着你。\n\n最爱你的男朋友`;const html=`<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">我看到啦</h1><p>今天的你是「${item.label}」。</p><p>${item.comfort}</p><p style="color:#766670">不用急着变好，也不用急着说什么。<br>我会在这里陪着你。💗</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;await sendMail(email,'我收到你今天的小心情了 💗',body,key,html);const owner=ownerEmail();if(owner&&owner!==email)await sendMail(owner,'一条轻轻的心情通知',`她刚刚选择了「${item.label}」。\n\n${['sad','tired','anxious'].includes(mood)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份想念已经寄到你这里了。'}\n\n如果想说话，她会来找你。`,`${key}/owner`);}
+async function sendMoodMail(userId:string,email:string,mood:Mood,key:string){const item=moodOptions[mood];const body=`我看到啦。\n\n今天的你是「${item.label}」。${item.comfort}\n\n不用急着变好，也不用急着说什么。我会在这里陪着你。\n\n最爱你的男朋友`;const html=`<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">我看到啦</h1><p>今天的你是「${item.label}」。</p><p>${item.comfort}</p><p style="color:#766670">不用急着变好，也不用急着说什么。<br>我会在这里陪着你。💗</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;await sendMail(email,'我收到你今天的小心情了 💗',body,key,html);const owner=ownerEmail();await sendMail(owner,`她刚刚选择了「${item.label}」 💗`,`她刚刚选择了「${item.label}」。\n\n${['sad','tired','anxious'].includes(mood)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份想念已经寄到你这里了。'}\n\n如果想说话，她会来找你。`,`${key}/owner`);}
 
 async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
 function randomToken(){return Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -109,10 +109,8 @@ Deno.serve(async req=>{
    if(!record||Date.parse(record.expires_at)<Date.now())return reply({error:'LINK_EXPIRED'},400);
    if(!record.email)throw Error('MOOD_EMAIL_REQUIRED');
    const entryId=crypto.randomUUID();
-   check(await db.from('mood_entries').insert({id:entryId,user_id:record.user_id,mood}));
-   check(await db.from('mood_email_actions').update({selected_mood:mood,selected_at:new Date().toISOString()}).eq('id',record.id));
    await sendMoodMail(record.user_id,record.email,mood,`mood-email-select/${entryId}`);
-   return reply({mood});
+   return reply({mood,mailSent:true,release:'mood-memory-owner-v2'});
  }
  if(action==='enter') {
    const ip=req.headers.get('cf-connecting-ip')||req.headers.get('x-real-ip')||req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
@@ -201,9 +199,8 @@ Deno.serve(async req=>{
    const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
    if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
    const entryId=crypto.randomUUID();
-   check(await db.from('mood_entries').insert({id:entryId,user_id:user.id,mood}));
    await sendMoodMail(user.id,sub.email,mood,`mood-select/${entryId}`);
-   return reply({mood});
+   return reply({mood,mailSent:true,release:'mood-memory-owner-v2'});
  }
  if(action==='media-upload-intent') {
   if(member.role!=='player')throw Error('FORBIDDEN');visionConfig();
