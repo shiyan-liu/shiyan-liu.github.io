@@ -96,7 +96,7 @@ Deno.serve(async req=>{
      const token=randomToken();
      try {
        await sendMail(subscriber.email,'早上好，今天想给自己充一点电吗？',`早上好。\n\n无论今天怎么样，你都值得被爱。\n\n如果此刻刚好想留下一点心情，打开这里选择就好：${moodUrl}\n\n如果今天不想选，完全可以忽略这封信。不需要解释，也不需要补上昨天的选择。\n\n愿今天对你轻一点。`,`mood-reminder/${subscriber.user_id}/${date}`,reminderHtml(token));
-       check(await db.from('mood_email_actions').insert({id:crypto.randomUUID(),user_id:subscriber.user_id,token_hash:await digest(token),reminder_date:date,expires_at:new Date(Date.now()+1000*60*60*36).toISOString()}));
+       check(await db.from('mood_email_actions').insert({id:crypto.randomUUID(),user_id:subscriber.user_id,email:subscriber.email,token_hash:await digest(token),reminder_date:date,expires_at:new Date(Date.now()+1000*60*60*36).toISOString()}));
        check(await db.from('mood_reminders').insert({user_id:subscriber.user_id,reminder_date:date}));sent++;
      } catch(error) {console.error('mood reminder failed');}
    }
@@ -105,14 +105,13 @@ Deno.serve(async req=>{
  if(action==='mood-email-select') {
    const token=text(body.token,64),mood=body.mood;
    if(!isMood(mood))throw Error('INVALID_MOOD');
-   const record=check(await db.from('mood_email_actions').select('id,user_id,expires_at').eq('token_hash',await digest(token)).maybeSingle());
+   const record=check(await db.from('mood_email_actions').select('id,user_id,email,expires_at').eq('token_hash',await digest(token)).maybeSingle());
    if(!record||Date.parse(record.expires_at)<Date.now())return reply({error:'LINK_EXPIRED'},400);
-   const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',record.user_id).eq('status','active').maybeSingle());
-   if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
+   if(!record.email)throw Error('MOOD_EMAIL_REQUIRED');
    const entryId=crypto.randomUUID();
    check(await db.from('mood_entries').insert({id:entryId,user_id:record.user_id,mood}));
    check(await db.from('mood_email_actions').update({selected_mood:mood,selected_at:new Date().toISOString()}).eq('id',record.id));
-   await sendMoodMail(record.user_id,sub.email,mood,`mood-email-select/${entryId}`);
+   await sendMoodMail(record.user_id,record.email,mood,`mood-email-select/${entryId}`);
    return reply({mood});
  }
  if(action==='enter') {

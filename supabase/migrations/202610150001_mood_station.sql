@@ -22,6 +22,7 @@ grant all on public.mood_reminders to service_role;
 create table if not exists public.mood_email_actions (
   id uuid primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
+  email text,
   token_hash text not null unique,
   reminder_date date not null,
   expires_at timestamptz not null,
@@ -33,3 +34,5 @@ create index if not exists mood_email_actions_user_created_at on public.mood_ema
 alter table public.mood_email_actions enable row level security;
 revoke all on public.mood_email_actions from anon, authenticated;
 grant all on public.mood_email_actions to service_role;
+
+alter table public.mood_email_actions add column if not exists email text;
