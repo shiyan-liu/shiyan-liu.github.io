@@ -9,10 +9,19 @@ const model = Deno.env.get('EMBEDDING_MODEL') || 'text-embedding-3-small';
 function check<T>(result: {data:T;error:any}): T { if(result.error) throw result.error; return result.data; }
 function text(value: unknown, max: number) { if(typeof value !== 'string' || !value.trim() || value.trim().length>max) throw new Error('INVALID_INPUT'); return value.trim(); }
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
-const publicUrl='https://shiyanliu.com/gift/';
+const publicUrl='https://shiyanliu.com/zz/gift/';
+const moodUrl='https://shiyanliu.com/zz/mood/';
+const moodOptions={sad:{label:'有点难过',comfort:'今天不必努力表现得很好。把一点点难过放在这里，也可以。'},tired:{label:'好累好累',comfort:'今天已经辛苦很久了。剩下的事，慢一点也没有关系。'},anxious:{label:'有点焦虑',comfort:'不用一次把所有事情想明白。先照顾好此刻的自己。'},miss_you:{label:'想男朋友了',comfort:'这份想念已经被好好收到。今天也有人在惦记你。'}} as const;
+type Mood=keyof typeof moodOptions;
+function isMood(value:unknown):value is Mood{return typeof value==='string'&&value in moodOptions;}
 function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get('GIFT_FROM_EMAIL');if(!key||!from)throw Error('MAIL_UNAVAILABLE');return {key,from};}
 function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');const model=Deno.env.get('VISION_MODEL');if(!key||!model)throw Error('FACE_UNAVAILABLE');return {key,model};}
-async function sendMail(to:string,subject:string,body:string,idempotencyKey:string){const {key,from}=mailConfig();const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from,to:[to],subject,text:body}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
+async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from,to:[to],subject,text:body,...(html?{html}:{})}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
+function emailFrom(value:string|undefined){const found=(value||'').match(/<([^>]+)>/)||(value||'').match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);return found?.[1]||found?.[0]||null;}
+function ownerEmail(){return emailFrom(Deno.env.get('MOOD_OWNER_EMAIL')||Deno.env.get('GIFT_OWNER_EMAIL')||Deno.env.get('GIFT_FROM_EMAIL'));}
+function beijingDate(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const part=(type:string)=>parts.find(x=>x.type===type)?.value;return `${part('year')}-${part('month')}-${part('day')}`;}
+function reminderHtml(token:string){const buttons=(Object.entries(moodOptions) as [Mood,(typeof moodOptions)[Mood]][]).map(([id,item])=>`<a href="${moodUrl}?mood=${id}&token=${token}" style="display:block;margin:10px 0;padding:13px 16px;border:1px solid #eadde4;border-radius:10px;color:#5f4756;text-decoration:none;font-size:15px">${item.label}</a>`).join('');return `<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafc;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">早上好，今天想给自己充一点电吗？</h1><p>无论今天怎么样，你都值得被爱。</p><p>如果此刻刚好想留下一点心情，点一下下面的任意一项就好：</p>${buttons}<p style="margin-top:22px;color:#766670">如果今天不想选，完全可以忽略这封信。不需要解释，也不需要补上昨天的选择。</p><p style="color:#766670">愿今天对你轻一点。</p></div>`;}
+async function sendMoodMail(userId:string,email:string,mood:Mood,key:string){const item=moodOptions[mood];await sendMail(email,'我收到你今天的小心情了',`今天你选择了「${item.label}」。\n\n${item.comfort}\n\n不用回复，也不用解释。今天就按自己的节奏来。`,key);const owner=ownerEmail();if(owner&&owner!==email)await sendMail(owner,'一条轻轻的心情通知',`她刚刚选择了「${item.label}」。\n\n${['sad','tired','anxious'].includes(mood)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份想念已经寄到你这里了。'}\n\n如果想说话，她会来找你。`,`${key}/owner`);}
 
 async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
 function randomToken(){return Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -75,6 +84,37 @@ Deno.serve(async req=>{
  try {
  const raw = await req.text(); if(raw.length>16000) throw new Error('INVALID_INPUT');
  const body = JSON.parse(raw); const action = text(body.action,30);
+ if(action==='mood-reminder') {
+   if(!Deno.env.get('MOOD_CRON_SECRET')||req.headers.get('x-mood-cron')!==Deno.env.get('MOOD_CRON_SECRET'))return reply({error:'FORBIDDEN'},403);
+   mailConfig();
+   const date=beijingDate();
+   const subscribers=check(await db.from('gift_email_subscriptions').select('user_id,email').eq('status','active'));
+   let sent=0;
+   for(const subscriber of subscribers) {
+     const existing=check(await db.from('mood_reminders').select('user_id').eq('user_id',subscriber.user_id).eq('reminder_date',date).maybeSingle());
+     if(existing)continue;
+     const token=randomToken();
+     try {
+       await sendMail(subscriber.email,'早上好，今天想给自己充一点电吗？',`早上好。\n\n无论今天怎么样，你都值得被爱。\n\n如果此刻刚好想留下一点心情，打开这里选择就好：${moodUrl}\n\n如果今天不想选，完全可以忽略这封信。不需要解释，也不需要补上昨天的选择。\n\n愿今天对你轻一点。`,`mood-reminder/${subscriber.user_id}/${date}`,reminderHtml(token));
+       check(await db.from('mood_email_actions').insert({id:crypto.randomUUID(),user_id:subscriber.user_id,token_hash:await digest(token),reminder_date:date,expires_at:new Date(Date.now()+1000*60*60*36).toISOString()}));
+       check(await db.from('mood_reminders').insert({user_id:subscriber.user_id,reminder_date:date}));sent++;
+     } catch(error) {console.error('mood reminder failed');}
+   }
+   return reply({date,sent});
+ }
+ if(action==='mood-email-select') {
+   const token=text(body.token,64),mood=body.mood;
+   if(!isMood(mood))throw Error('INVALID_MOOD');
+   const record=check(await db.from('mood_email_actions').select('id,user_id,expires_at').eq('token_hash',await digest(token)).maybeSingle());
+   if(!record||Date.parse(record.expires_at)<Date.now())return reply({error:'LINK_EXPIRED'},400);
+   const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',record.user_id).eq('status','active').maybeSingle());
+   if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
+   const entryId=crypto.randomUUID();
+   check(await db.from('mood_entries').insert({id:entryId,user_id:record.user_id,mood}));
+   check(await db.from('mood_email_actions').update({selected_mood:mood,selected_at:new Date().toISOString()}).eq('id',record.id));
+   await sendMoodMail(record.user_id,sub.email,mood,`mood-email-select/${entryId}`);
+   return reply({mood});
+ }
  if(action==='enter') {
    const ip=req.headers.get('cf-connecting-ip')||req.headers.get('x-real-ip')||req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
    const bytes=new TextEncoder().encode(ip+':' +(Deno.env.get('LOGIN_RATE_SALT')||''));
@@ -111,7 +151,7 @@ Deno.serve(async req=>{
  const {data:member,error:memberError} = await db.from('gift_members').select('*').eq('user_id',user.id).maybeSingle();
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
  const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
- if(action!=='tease' && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
+ if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='state') return reply(await state(user.id));
  if(action==='tease') {
   if(member.role!=='player')throw Error('FORBIDDEN');
@@ -155,6 +195,16 @@ Deno.serve(async req=>{
  if(action==='unsubscribe') {
    check(await db.from('gift_email_subscriptions').update({status:'unsubscribed',confirm_hash:null}).eq('user_id',user.id));
    return reply({status:'unsubscribed'});
+ }
+ if(action==='mood-select') {
+   if(member.role!=='player')throw Error('FORBIDDEN');
+   const mood=body.mood;if(!isMood(mood))throw Error('INVALID_MOOD');
+   const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
+   if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
+   const entryId=crypto.randomUUID();
+   check(await db.from('mood_entries').insert({id:entryId,user_id:user.id,mood}));
+   await sendMoodMail(user.id,sub.email,mood,`mood-select/${entryId}`);
+   return reply({mood});
  }
  if(action==='media-upload-intent') {
   if(member.role!=='player')throw Error('FORBIDDEN');visionConfig();
@@ -202,7 +252,7 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
+ const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
  return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);

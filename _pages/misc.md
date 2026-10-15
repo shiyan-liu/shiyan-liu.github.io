@@ -16,7 +16,7 @@ author_profile: true
     <h2>📖 Notes</h2>
     <p class="desc">What failure really means, and the quiet case for always trying. Two short pieces I keep coming back to.</p>
   </a>
-  <a class="misc-card" href="/gift/">
+  <a class="misc-card" href="/zz/">
     <h2>🩷 A Little Space for zz &amp; Me</h2>
     <p class="desc">Little surprises are lining up behind this door. Got the secret word, zz? Come on in. Everyone else: you saw nothing.</p>
   </a>

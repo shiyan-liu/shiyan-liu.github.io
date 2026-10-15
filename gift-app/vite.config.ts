@@ -1,2 +1,2 @@
 import { defineConfig } from 'vite';
-export default defineConfig({ base: '/gift/', build: { outDir: '../gift', emptyOutDir: true } });
+export default defineConfig({ base: '/zz/gift/', build: { outDir: '../zz/gift', emptyOutDir: true } });
