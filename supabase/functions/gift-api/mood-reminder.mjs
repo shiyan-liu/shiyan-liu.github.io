@@ -1,3 +1,5 @@
+import {moodOptions} from './mood-response.mjs';
+const moodUrl='https://shiyanliu.com/zz/mood/';
 export function reminderClock(now = new Date()) {
   const parts = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(now);
   const value = type => parts.find(part => part.type === type).value;
@@ -15,3 +17,4 @@ export function reminderCopy(slot) {
     close:'我在这里，愿今天对你轻一点。💗'
   };
 }
+export function reminderHtml(token,slot){const copy=reminderCopy(slot);const items=Object.entries(moodOptions);const buttons='<table role="presentation" style="width:100%;table-layout:fixed;border-spacing:6px;margin:12px 0"><tbody>'+Array.from({length:Math.ceil(items.length/2)},(_,row)=>'<tr>'+items.slice(row*2,row*2+2).map(([id,item])=>`<td style="width:50%;padding:0"><a href="${moodUrl}?moods=${id}&token=${token}" style="display:block;padding:11px 12px;border:1px solid #eadde4;border-radius:9px;background:#fff;color:#5f4756;text-decoration:none;text-align:center;font-size:13px">${item.label}</a></td>`).join('')+'</tr>').join('')+'</tbody></table>';return `<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">${copy.title}</h1><p>${copy.intro}</p><p style="font-size:13px;color:#957285">心情也可以不止一种。点开小空间后选好，再一起寄给我。</p>${buttons}<p style="margin-top:22px;color:#766670">如果今天不想选，也没关系。<br>不用回复，也不用解释。今天就按自己的节奏来。</p><p style="color:#766670">${copy.close}</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;}

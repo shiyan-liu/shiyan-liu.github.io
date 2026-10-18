@@ -1,25 +1,87 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {cfg,supabase} from './space-session';
-import {ArrowLeft,CheckCircle2,CloudRain,Heart,MailCheck,Moon,Sparkles,X} from 'lucide-react';
+import {ArrowLeft,Check,CheckCircle2,CloudRain,Heart,MailCheck,Moon,Smile,Sparkles,HandHeart,X} from 'lucide-react';
 
-type Mood='sad'|'tired'|'anxious'|'miss_you';
-const isMood=(value:string|null):value is Mood=>value==='sad'||value==='tired'||value==='anxious'||value==='miss_you';
-const moods:{id:Mood;title:string;detail:string;icon:React.ReactNode;note:string}[]=[
- {id:'sad',title:'有点难过',detail:'今天可以不用坚强。',icon:<CloudRain/>,note:'今天不必努力表现得很好。把一点点难过放在这里，也可以。'},
- {id:'tired',title:'好累好累',detail:'辛苦的小朋友。',icon:<Moon/>,note:'今天已经辛苦很久了。剩下的事，慢一点也没有关系。'},
- {id:'anxious',title:'有点焦虑',detail:'先一起吸口气。',icon:<Sparkles/>,note:'不用一次把所有事情想明白。先照顾好此刻的自己。'},
- {id:'miss_you',title:'想男朋友了',detail:'那就把想念寄出去。',icon:<Heart/>,note:'这份想念已经被好好收到。今天也有人在惦记你。'}
+type Mood='sad'|'tired'|'anxious'|'miss_you'|'happy'|'hurt'|'hug';
+type Letter={moods:Mood[];quote:string;close:string};
+const moods:{id:Mood;title:string;detail:string;icon:React.ReactNode}[]=[
+ {id:'sad',title:'有点难过',detail:'今天可以不用坚强。',icon:<CloudRain/>},
+ {id:'tired',title:'好累好累',detail:'辛苦的小朋友。',icon:<Moon/>},
+ {id:'anxious',title:'有点焦虑',detail:'先一起吸口气。',icon:<Sparkles/>},
+ {id:'miss_you',title:'想男朋友了',detail:'把想念寄出去。',icon:<Heart/>},
+ {id:'happy',title:'今天好开心',detail:'快乐也想分你一半。',icon:<Smile/>},
+ {id:'hurt',title:'有点小委屈',detail:'来这里，不用逞强。',icon:<CloudRain/>},
+ {id:'hug',title:'想要抱抱',detail:'想被好好抱一会儿。',icon:<HandHeart/>}
 ];
-async function request(action:string,data:Record<string,unknown>={}){if(!supabase||!cfg)throw Error('NOT_CONFIGURED');const {data:{session}}=await supabase.auth.getSession();if(!session)throw Error('UNAUTHORIZED');const r=await fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey,Authorization:`Bearer ${session.access_token}`},body:JSON.stringify({action,...data})});const result=await r.json();if(!r.ok)throw Error(result.error||'SERVER_ERROR');return result;}
-export function MoodApp(){const [ready,setReady]=useState(false),[loggedIn,setLoggedIn]=useState(false),[picked,setPicked]=useState<Mood|null>(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[error,setError]=useState('');
- const emailStarted=useRef(false);
- const emailToken=useRef(new URLSearchParams(window.location.search).get('token'));
- const [emailAccess,setEmailAccess]=useState(false);
- const [emailPending,setEmailPending]=useState(()=>{const query=new URLSearchParams(window.location.search);return !!query.get('token')&&isMood(query.get('mood'));});
+const isMood=(value:string|null):value is Mood=>moods.some(m=>m.id===value);
+async function publicRequest(action:string,data:Record<string,unknown>={}){
+ if(!cfg)throw Error('NOT_CONFIGURED');
+ const r=await fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey},body:JSON.stringify({action,...data})});
+ const result=await r.json();if(!r.ok)throw Error(result.error||'SERVER_ERROR');return result;
+}
+async function request(action:string,data:Record<string,unknown>={}){
+ if(!supabase||!cfg)throw Error('NOT_CONFIGURED');
+ const {data:{session}}=await supabase.auth.getSession();if(!session)throw Error('UNAUTHORIZED');
+ const r=await fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey,Authorization:`Bearer ${session.access_token}`},body:JSON.stringify({action,...data})});
+ const result=await r.json();if(!r.ok)throw Error(result.error||'SERVER_ERROR');return result;
+}
+export function MoodApp(){
+ const [ready,setReady]=useState(false),[loggedIn,setLoggedIn]=useState(false);
+ const [draft,setDraft]=useState<Mood[]>(()=>[...new Set((new URLSearchParams(location.search).get('moods')||new URLSearchParams(location.search).get('mood')||'').split(',').filter(isMood))]);
+ const [letter,setLetter]=useState<Letter|null>(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[error,setError]=useState('');
+ const emailStarted=useRef(false),emailToken=useRef(new URLSearchParams(location.search).get('token'));
+ const [emailAccess,setEmailAccess]=useState(false),[emailPending,setEmailPending]=useState(!!emailToken.current);
+ function complete(data:{quote?:string;close?:string;mailSent?:boolean},selected:Mood[]){
+  if(!data.mailSent||!data.quote||!data.close)throw Error('MOOD_REPLY_UNAVAILABLE');
+  setLetter({moods:selected,quote:data.quote,close:data.close});setNotice('信已经寄出啦，记得看看邮箱。');
+ }
  useEffect(()=>{if(!supabase){setReady(true);return;}supabase.auth.getSession().then(({data})=>{setLoggedIn(!!data.session);setReady(true);if(!data.session&&!emailToken.current)location.replace('/zz/?next=mood');});},[]);
- useEffect(()=>{const query=new URLSearchParams(window.location.search),mood=query.get('mood'),token=query.get('token');if(!token||!mood||!isMood(mood)||!cfg){setEmailPending(false);return;}if(emailStarted.current)return;emailStarted.current=true;setBusy(true);fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey},body:JSON.stringify({action:'mood-email-select',mood,token})}).then(async r=>{const data=await r.json();if(!r.ok)throw Error(data.error);setPicked(mood);setEmailAccess(true);setNotice('信已经寄出啦，记得看看邮箱。');window.history.replaceState({},'',window.location.pathname);}).catch(()=>setError('这次没能把信送出去。请稍后重试，或从这里重新进来。')).finally(()=>{setBusy(false);setEmailPending(false);});},[]);
- useEffect(()=>{if(!notice&&!error)return;const id=window.setTimeout(()=>{setNotice('');setError('');},5000);return()=>window.clearTimeout(id);},[notice,error]);
- const selectMood=async(mood:Mood)=>{setBusy(true);setError('');setNotice('');try{if(emailToken.current&&emailAccess&&cfg){const r=await fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey},body:JSON.stringify({action:'mood-email-select',mood,token:emailToken.current})});if(!r.ok)throw Error((await r.json()).error);}else await request('mood-select',{mood});setPicked(mood);setNotice('信已经寄出啦，记得看看邮箱。');}catch(e){setError(String(e).includes('MOOD_EMAIL_REQUIRED')?'先在惊喜页面留下并确认邮箱，才可以把这份心情好好送达。':'这次没有收好，等一会儿再试试。');}finally{setBusy(false);}};
- const mood=moods.find(x=>x.id===picked);
- const content=<main className={`mood-shell ${mood?'mood-shell-confirmed':''}`}><a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a><span className="mood-eyebrow">A SOFT PLACE TO LAND</span>{mood?<><section className="mood-letter" aria-labelledby="mood-letter-title"><span className="mood-letter-heart" aria-hidden="true">💗</span><h1 id="mood-letter-title">我看到啦</h1><p>今天的你是「{mood.title}」。</p><p>{mood.note}</p><p className="mood-letter-close">不用急着变好，也不用急着说什么。<br/>我会在这里陪着你。💗</p><p className="mood-letter-signature">最爱你的男朋友</p></section><div className="mood-mail-status" role="status"><MailCheck size={19}/><div><strong>信已经寄出啦</strong><span>这份小心情也装进了邮件，记得看看邮箱。</span></div><CheckCircle2 size={16}/></div><button className="mood-again" onClick={()=>{setPicked(null);setNotice('');}}>再选一次</button></>:<><h1>♡ 宝宝心情充电站 ♡</h1><p className="mood-intro">无论今天怎么样，你都值得被爱。<br/>今天的宝宝是什么心情呀？</p><section className="mood-grid">{moods.map(item=><button key={item.id} className="mood-choice" onClick={()=>selectMood(item.id)} disabled={busy}><span className="mood-icon">{item.icon}</span><strong>{item.title}</strong><small>{item.detail}</small></button>)}</section><p className="mood-foot">想选几次都可以；不想选时，什么都不用做。</p></>}</main>;
- return <div className="mood-app"><header className="topbar"><a className="brand" href="/zz/"><span className="brand-mark">✳</span><span>shiyan's little corner</span></a><span className="topbar-note">a tiny place for us two ♡</span></header>{!ready||emailPending?<main className="mood-shell"><p role="status">{emailPending?'正在收好你的心情，把信轻轻寄出去…':'正在为你打开充电站…'}</p></main>:loggedIn||picked||emailAccess?content:<main className="mood-shell mood-gate"><a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a><span className="mood-eyebrow">FOR TODAY, AND ONLY TODAY</span><h1>宝宝心情<br/>充电站</h1><p>无论今天怎么样，你都值得被爱。</p><a className="back-link" href="/zz/?next=mood">回到小空间，对一下暗号 →</a></main>}{(notice||error)&&<div className={`toast ${error?'toast-error':''}`} role={error?'alert':'status'}><span>{notice||error}</span><button onClick={()=>{setNotice('');setError('')}} aria-label="关闭"><X size={16}/></button></div>}</div>;}
+ useEffect(()=>{
+  const token=emailToken.current;if(!token||emailStarted.current){if(!token)setEmailPending(false);return;}
+  emailStarted.current=true;
+  publicRequest('mood-email-open',{token}).then(()=>{
+   setEmailAccess(true);
+   history.replaceState({},'',location.pathname);
+  }).catch(()=>setError('这次没能打开小纸条。可以稍后重试，或回到小空间。')).finally(()=>setEmailPending(false));
+ },[]);
+ useEffect(()=>{if(!notice&&!error)return;const id=window.setTimeout(()=>{setNotice('');setError('');},6000);return()=>window.clearTimeout(id);},[notice,error]);
+ async function sendSelection(e:React.FormEvent){
+  e.preventDefault();if(!draft.length||busy)return;setBusy(true);setError('');setNotice('');
+  try{
+   const data=emailToken.current&&emailAccess?await publicRequest('mood-email-select',{moods:draft,token:emailToken.current}):await request('mood-select',{moods:draft});
+   complete(data,[...draft]);
+  }catch(e){
+   const message=String(e);
+   setError(message.includes('MOOD_EMAIL_REQUIRED')?'先在惊喜页面留下并确认邮箱，才可以把这份心情好好送达。':message.includes('MOOD_REPLY_UNAVAILABLE')?'小纸条这次没写好，还没有寄信。稍后再试一次，好吗？':'这次没能把信送出去，稍后再试试。');
+  }finally{setBusy(false);}
+ }
+ const labels=letter?.moods.map(id=>moods.find(x=>x.id===id)!.title).join('、');
+ const content=<main className={`mood-shell ${letter?'mood-shell-confirmed':'mood-shell-picker'}`}>
+  <a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a>
+  <span className="mood-eyebrow">A SOFT PLACE TO LAND</span>
+  {letter?<><section className="mood-letter" aria-labelledby="mood-letter-title">
+   <span className="mood-letter-heart" aria-hidden="true">💗</span><h1 id="mood-letter-title">我看到啦</h1>
+   <p>今天的你是「{labels}」。</p>
+   <blockquote className="mood-letter-quote">“{letter.quote}”</blockquote>
+   <p className="mood-letter-close">{letter.close}<br/>我会在这里陪着你。💗</p>
+   <p className="mood-letter-signature">最爱你的男朋友</p>
+  </section><div className="mood-mail-status" role="status"><MailCheck size={19}/><div><strong>信已经寄出啦</strong><span>这份小心情也装进了邮件，记得看看邮箱。</span></div><CheckCircle2 size={16}/></div>
+  <button className="mood-again" onClick={()=>{setLetter(null);setDraft([]);setNotice('');}}>再选一次</button></>:<>
+   <h1>宝宝心情充电站</h1>
+   <p className="mood-intro">无论今天怎么样，你都值得被爱。<br/><span>心情可以不止一种，选好后一起交给我。</span></p>
+   <form onSubmit={sendSelection}>
+    <section className="mood-grid" aria-label="今天的心情，可多选">
+     {moods.map(item=>{const selected=draft.includes(item.id);return <button type="button" key={item.id} className={`mood-choice ${selected?'selected':''}`} aria-pressed={selected} onClick={()=>setDraft(current=>selected?current.filter(id=>id!==item.id):[...current,item.id])} disabled={busy}>
+      <span className="mood-choice-heading"><span className="mood-icon">{item.icon}</span><span className="mood-check" aria-hidden="true">{selected&&<Check size={12}/>}</span></span>
+      <strong>{item.title}</strong><small>{item.detail}</small>
+     </button>;})}
+    </section>
+    <div className="mood-send-row"><span aria-live="polite">{draft.length?`装好了 ${draft.length} 种小心情`:'可以多选，也可以晚点再来'}</span><button className="mood-send" disabled={!draft.length||busy}>{busy?'写一小句话，寄给你…':'把心情寄给你'}<Heart size={14}/></button></div>
+   </form>
+   <p className="mood-foot">想选几次都可以；不想选时，什么都不用做。</p>
+  </>}
+ </main>;
+ return <div className="mood-app"><header className="topbar"><a className="brand" href="/zz/"><span className="brand-mark">✳</span><span>shiyan's little corner</span></a><span className="topbar-note">a tiny place for us two ♡</span></header>
+ {!ready||emailPending?<main className="mood-shell"><p role="status">正在为你打开充电站…</p></main>:loggedIn||letter||emailAccess?content:<main className="mood-shell mood-gate"><a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a><h1>宝宝心情充电站</h1><p>无论今天怎么样，你都值得被爱。</p><a className="back-link" href="/zz/?next=mood">回到小空间，对一下暗号 →</a></main>}
+ {(notice||error)&&<div className={`toast ${error?'toast-error':''}`} role={error?'alert':'status'}><span>{notice||error}</span><button onClick={()=>{setNotice('');setError('')}} aria-label="关闭"><X size={16}/></button></div>}</div>;
+}

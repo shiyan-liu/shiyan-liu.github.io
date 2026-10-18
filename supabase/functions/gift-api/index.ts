@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
-import { reminderClock, reminderCopy } from './mood-reminder.mjs';
+import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
+import { parseMoods, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
 import { TEASE_MODEL, teaseRequest, validateTease } from './tease.mjs';
 import { validateMedia, parseVerification, verificationRequest } from './face-verification.mjs';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {auth:{persistSession:false}});
@@ -12,16 +13,28 @@ function text(value: unknown, max: number) { if(typeof value !== 'string' || !va
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
 const publicUrl='https://shiyanliu.com/zz/gift/';
 const moodUrl='https://shiyanliu.com/zz/mood/';
-const moodOptions={sad:{label:'有点难过',comfort:'今天不必努力表现得很好。把一点点难过放在这里，也可以。'},tired:{label:'好累好累',comfort:'今天已经辛苦很久了。剩下的事，慢一点也没有关系。'},anxious:{label:'有点焦虑',comfort:'不用一次把所有事情想明白。先照顾好此刻的自己。'},miss_you:{label:'想男朋友了',comfort:'这份想念已经被好好收到。今天也有人在惦记你。'}} as const;
-type Mood=keyof typeof moodOptions;
-function isMood(value:unknown):value is Mood{return typeof value==='string'&&value in moodOptions;}
 function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get('GIFT_FROM_EMAIL');if(!key||!from)throw Error('MAIL_UNAVAILABLE');return {key,from};}
 function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');const model=Deno.env.get('VISION_MODEL');if(!key||!model)throw Error('FACE_UNAVAILABLE');return {key,model};}
 async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const address=emailFrom(from);const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:address?`最爱你的男朋友 <${address}>`:from,to:[to],subject,text:body,...(html?{html}:{})}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
 function emailFrom(value:string|undefined){const found=(value||'').match(/<([^>]+)>/)||(value||'').match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);return found?.[1]||found?.[0]||null;}
 function ownerEmail(){return 'shyliu.china@gmail.com';}
-function reminderHtml(token:string,slot:string){const copy=reminderCopy(slot);const buttons=(Object.entries(moodOptions) as [Mood,(typeof moodOptions)[Mood]][]).map(([id,item])=>`<a href="${moodUrl}?mood=${id}&token=${token}" style="display:block;margin:10px 0;padding:13px 16px;border:1px solid #eadde4;border-radius:10px;color:#5f4756;text-decoration:none;font-size:15px">${item.label}</a>`).join('');return `<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">${copy.title}</h1><p>${copy.intro}</p>${buttons}<p style="margin-top:22px;color:#766670">如果今天不想选，也没关系。<br>不用回复，也不用解释。今天就按自己的节奏来。</p><p style="color:#766670">${copy.close}</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;}
-async function sendMoodMail(userId:string,email:string,mood:Mood,key:string){const item=moodOptions[mood];const body=`我看到啦。\n\n今天的你是「${item.label}」。${item.comfort}\n\n不用急着变好，也不用急着说什么。我会在这里陪着你。\n\n最爱你的男朋友`;const html=`<div style="max-width:520px;margin:auto;padding:30px 22px;background:#fffafd;color:#453840;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7"><div style="font-size:28px;line-height:1;margin-bottom:12px">💗</div><h1 style="font-size:22px;font-weight:600;margin:0 0 16px">我看到啦</h1><p>今天的你是「${item.label}」。</p><p>${item.comfort}</p><p style="color:#766670">不用急着变好，也不用急着说什么。<br>我会在这里陪着你。💗</p><p style="margin-top:26px;color:#8b6c7c">最爱你的男朋友</p></div>`;await sendMail(email,'我收到你今天的小心情了 💗',body,key,html);const owner=ownerEmail();await sendMail(owner,`她刚刚选择了「${item.label}」 💗`,`她刚刚选择了「${item.label}」。\n\n${['sad','tired','anxious'].includes(mood)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份想念已经寄到你这里了。'}\n\n如果想说话，她会来找你。`,`${key}/owner`);}
+async function generateMoodQuote(moods:string[]) {
+ const key=Deno.env.get('MOOD_REPLY_API_KEY')||Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');
+ if(!key)throw Error('MOOD_REPLY_UNAVAILABLE');
+ try {
+  const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':moodUrl,'X-Title':'A little note for you'},body:JSON.stringify(moodQuoteRequest(moods,Deno.env.get('MOOD_REPLY_MODEL')||Deno.env.get('TEASE_MODEL')||TEASE_MODEL)),signal:AbortSignal.timeout(25000)});
+  if(!response.ok)throw Error('MOOD_REPLY_UNAVAILABLE');
+  const result=await response.json();
+  if(result.choices?.[0]?.finish_reason!=='stop')throw Error('MOOD_REPLY_UNAVAILABLE');
+  return validateMoodQuote(result.choices[0].message?.content);
+ }catch{throw Error('MOOD_REPLY_UNAVAILABLE');}
+}
+async function sendMoodMail(userId:string,email:string,moods:string[],key:string){
+ const quote=await generateMoodQuote(moods),mail=confirmationMail(moods,quote);
+ await sendMail(email,mail.subject,mail.text,key,mail.html);
+ await sendMail(ownerEmail(),`她刚刚选择了「${mail.labels}」 💗`,`她刚刚选择了「${mail.labels}」。\n\n${needsComfort(moods)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份小心情已经寄到你这里了。'}\n\n给她的小纸条：“${quote}”\n\n如果想说话，她会来找你。`,`${key}/owner`);
+ return {quote,close:mail.close};
+}
 
 async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
 function randomToken(){return Array.from(crypto.getRandomValues(new Uint8Array(32))).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -108,15 +121,15 @@ Deno.serve(async req=>{
    }
    return reply({date,slot,sent,skipped,failed,release:'mood-twice-daily-v1'},failed?503:200);
  }
- if(action==='mood-email-select') {
-   const token=text(body.token,64),mood=body.mood;
-   if(!isMood(mood))throw Error('INVALID_MOOD');
+ if(action==='mood-email-select'||action==='mood-email-open') {
+   const token=text(body.token,64);
    const record=check(await db.from('mood_email_actions').select('id,user_id,email,expires_at').eq('token_hash',await digest(token)).maybeSingle());
    if(!record||Date.parse(record.expires_at)<Date.now())return reply({error:'LINK_EXPIRED'},400);
    if(!record.email)throw Error('MOOD_EMAIL_REQUIRED');
-   const entryId=crypto.randomUUID();
-   await sendMoodMail(record.user_id,record.email,mood,`mood-email-select/${entryId}`);
-   return reply({mood,mailSent:true,release:'mood-memory-owner-v2'});
+   if(action==='mood-email-open')return reply({ready:true});
+   const moods=parseMoods(body.moods??body.mood),entryId=crypto.randomUUID();
+   const message=await sendMoodMail(record.user_id,record.email,moods,`mood-email-select/${entryId}`);
+   return reply({moods,...message,mailSent:true,release:'mood-multi-quote-v1'});
  }
  if(action==='enter') {
    const ip=req.headers.get('cf-connecting-ip')||req.headers.get('x-real-ip')||req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
@@ -201,12 +214,12 @@ Deno.serve(async req=>{
  }
  if(action==='mood-select') {
    if(member.role!=='player')throw Error('FORBIDDEN');
-   const mood=body.mood;if(!isMood(mood))throw Error('INVALID_MOOD');
+   const moods=parseMoods(body.moods??body.mood);
    const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
    if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
    const entryId=crypto.randomUUID();
-   await sendMoodMail(user.id,sub.email,mood,`mood-select/${entryId}`);
-   return reply({mood,mailSent:true,release:'mood-memory-owner-v2'});
+   const message=await sendMoodMail(user.id,sub.email,moods,`mood-select/${entryId}`);
+   return reply({moods,...message,mailSent:true,release:'mood-multi-quote-v1'});
  }
  if(action==='media-upload-intent') {
   if(member.role!=='player')throw Error('FORBIDDEN');visionConfig();
@@ -257,6 +270,6 @@ Deno.serve(async req=>{
  const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);
  }
 });
