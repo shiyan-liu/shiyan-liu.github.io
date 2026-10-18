@@ -1,5 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {cfg,supabase} from './space-session';
+import {MoodBloom} from './MoodBloom';
 import {ArrowLeft,Check,CheckCircle2,CloudRain,Heart,MailCheck,Moon,Smile,Sparkles,Flame,Coffee,HandHeart,Plus,ChevronUp,X} from 'lucide-react';
 
 type Mood='sad'|'tired'|'anxious'|'miss_you'|'happy'|'angry'|'bored'|'hug';
@@ -90,6 +91,7 @@ export function MoodApp(){
   </>}
  </main>;
  return <div className="mood-app"><header className="topbar"><a className="brand" href="/zz/"><span className="brand-mark">✳</span><span>shiyan's little corner</span></a><span className="topbar-note">a tiny place for us two ♡</span></header>
+ {letter&&<MoodBloom/>}
  {!ready||emailPending?<main className="mood-shell"><p role="status">正在为你打开充电站…</p></main>:loggedIn||letter||emailAccess?content:<main className="mood-shell mood-gate"><a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a><h1>宝宝心情充电站</h1><p>无论今天怎么样，你都值得被爱。</p><a className="back-link" href="/zz/?next=mood">回到小空间，对一下暗号 →</a></main>}
  {(notice||error)&&<div className={`toast ${error?'toast-error':''}`} role={error?'alert':'status'}><span>{notice||error}</span><button onClick={()=>{setNotice('');setError('')}} aria-label="关闭"><X size={16}/></button></div>}</div>;
 }

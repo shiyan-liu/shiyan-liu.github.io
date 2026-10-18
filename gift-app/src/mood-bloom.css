@@ -1,0 +1,11 @@
+.mood-bloom{--bloom-spread:1;position:fixed;inset:0;pointer-events:none;overflow:hidden;color:#d38eac;z-index:100;background:radial-gradient(ellipse at center,#fff4fae6 0%,#fff7fbd9 22%,#fff9fc88 60%,#fff9fc22 100%);animation:mood-heart-wash 1.8s ease-out both}
+.mood-bloom-center{position:absolute;left:50%;top:50%;width:94px;height:94px;opacity:0;filter:drop-shadow(0 8px 22px #d38eac22);animation:mood-heart-open 1.65s cubic-bezier(.22,.72,.3,1) both}
+.mood-bloom-ring{position:absolute;left:calc(50% - 45px);top:calc(50% - 45px);width:90px;height:90px;border:1px solid #dfb1c7;border-radius:50%;opacity:0;animation:mood-heart-ring 1.5s .08s ease-out both}
+.mood-bloom-petal{position:absolute;left:calc(50% - 10px);top:calc(50% - 10px);width:20px;height:20px;opacity:0;animation:mood-heart-petal 1.45s var(--bloom-delay) cubic-bezier(.17,.67,.32,1) both}
+.mood-bloom-petal:nth-child(even){color:#e3acc5;width:14px;height:14px}
+@keyframes mood-heart-wash{0%{opacity:0}16%,55%{opacity:1}100%{opacity:0}}
+@keyframes mood-heart-open{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(-12deg)}24%{opacity:1;transform:translate(-50%,-50%) scale(1.12) rotate(4deg)}48%{opacity:.95;transform:translate(-50%,-50%) scale(1) rotate(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}}
+@keyframes mood-heart-ring{0%{opacity:.55;transform:scale(.45)}100%{opacity:0;transform:scale(5)}}
+@keyframes mood-heart-petal{0%{opacity:0;transform:translate(0,0) scale(.15)}18%{opacity:.9}65%{opacity:.65}100%{opacity:0;transform:translate(calc(var(--bloom-x)*var(--bloom-spread)),calc(var(--bloom-y)*var(--bloom-spread))) scale(.65) rotate(var(--bloom-turn))}}
+@media(max-width:580px){.mood-bloom{--bloom-spread:.72}.mood-bloom-center{width:78px;height:78px}.mood-bloom-petal{width:17px;height:17px}}
+@media(prefers-reduced-motion:reduce){.mood-bloom{display:none}.mood-bloom *{animation:none}}
