@@ -13,9 +13,9 @@ test('Evening reminders use an evening greeting and invalid slots fail',()=>{
   assert.doesNotMatch(Object.values(reminderCopy('evening')).join(''),/早安/);
   assert.throws(()=>reminderCopy('afternoon'),/INVALID_INPUT/);
 });
-test('reminder uses compact two-column navigation links for all seven moods',()=>{
+test('reminder uses compact two-column navigation links for all eight moods',()=>{
  const html=reminderHtml('test-token','evening');
- assert.equal((html.match(/<a href=/g)||[]).length,7);
+ assert.equal((html.match(/<a href=/g)||[]).length,8);
  assert.match(html,/table-layout:fixed/);
  assert.match(html,/width:50%/);
  assert.match(html,/\?moods=happy&token=test-token/);

@@ -1,19 +1,25 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {cfg,supabase} from './space-session';
-import {ArrowLeft,Check,CheckCircle2,CloudRain,Heart,MailCheck,Moon,Smile,Sparkles,HandHeart,X} from 'lucide-react';
+import {ArrowLeft,Check,CheckCircle2,CloudRain,Heart,MailCheck,Moon,Smile,Sparkles,Flame,Coffee,Sunrise,X} from 'lucide-react';
 
-type Mood='sad'|'tired'|'anxious'|'miss_you'|'happy'|'hurt'|'hug';
+type Mood='sad'|'tired'|'anxious'|'miss_you'|'happy'|'angry'|'bored'|'hopeful';
 type Letter={moods:Mood[];quote:string;close:string};
 const moods:{id:Mood;title:string;detail:string;icon:React.ReactNode}[]=[
+ {id:'happy',title:'今天好开心',detail:'快乐也想分你一半。',icon:<Smile/>},
  {id:'sad',title:'有点难过',detail:'今天可以不用坚强。',icon:<CloudRain/>},
  {id:'tired',title:'好累好累',detail:'辛苦的小朋友。',icon:<Moon/>},
  {id:'anxious',title:'有点焦虑',detail:'先一起吸口气。',icon:<Sparkles/>},
  {id:'miss_you',title:'想男朋友了',detail:'把想念寄出去。',icon:<Heart/>},
- {id:'happy',title:'今天好开心',detail:'快乐也想分你一半。',icon:<Smile/>},
- {id:'hurt',title:'有点小委屈',detail:'来这里，不用逞强。',icon:<CloudRain/>},
- {id:'hug',title:'想要抱抱',detail:'想被好好抱一会儿。',icon:<HandHeart/>}
+ {id:'angry',title:'有点小生气',detail:'小火苗，先放这里。',icon:<Flame/>},
+ {id:'bored',title:'今天有点无聊',detail:'想给日子加点料。',icon:<Coffee/>},
+ {id:'hopeful',title:'有点小期待',detail:'有件好事，偷偷盼着。',icon:<Sunrise/>}
+];
+const groups:{id:'share'|'care';title:string;ids:Mood[]}[]=[
+ {id:'share',title:'想和你分享',ids:['happy','hopeful','miss_you','bored']},
+ {id:'care',title:'想被温柔接住',ids:['sad','tired','anxious','angry']}
 ];
 const isMood=(value:string|null):value is Mood=>moods.some(m=>m.id===value);
+const normalizeMood=(value:string):Mood|null=>value==='hurt'?'sad':value==='hug'?'miss_you':isMood(value)?value:null;
 async function publicRequest(action:string,data:Record<string,unknown>={}){
  if(!cfg)throw Error('NOT_CONFIGURED');
  const r=await fetch(`${cfg.supabaseUrl}/functions/v1/gift-api`,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey},body:JSON.stringify({action,...data})});
@@ -27,7 +33,7 @@ async function request(action:string,data:Record<string,unknown>={}){
 }
 export function MoodApp(){
  const [ready,setReady]=useState(false),[loggedIn,setLoggedIn]=useState(false);
- const [draft,setDraft]=useState<Mood[]>(()=>[...new Set((new URLSearchParams(location.search).get('moods')||new URLSearchParams(location.search).get('mood')||'').split(',').filter(isMood))]);
+ const [draft,setDraft]=useState<Mood[]>(()=>[...new Set((new URLSearchParams(location.search).get('moods')||new URLSearchParams(location.search).get('mood')||'').split(',').map(normalizeMood).filter(isMood))]);
  const [letter,setLetter]=useState<Letter|null>(null),[busy,setBusy]=useState(false),[notice,setNotice]=useState(''),[error,setError]=useState('');
  const emailStarted=useRef(false),emailToken=useRef(new URLSearchParams(location.search).get('token'));
  const [emailAccess,setEmailAccess]=useState(false),[emailPending,setEmailPending]=useState(!!emailToken.current);
@@ -55,13 +61,12 @@ export function MoodApp(){
    setError(message.includes('MOOD_EMAIL_REQUIRED')?'先在惊喜页面留下并确认邮箱，才可以把这份心情好好送达。':message.includes('MOOD_REPLY_UNAVAILABLE')?'小纸条这次没写好，还没有寄信。稍后再试一次，好吗？':'这次没能把信送出去，稍后再试试。');
   }finally{setBusy(false);}
  }
- const labels=letter?.moods.map(id=>moods.find(x=>x.id===id)!.title).join('、');
- const content=<main className={`mood-shell ${letter?'mood-shell-confirmed':'mood-shell-picker'}`}>
+  const content=<main className={`mood-shell ${letter?'mood-shell-confirmed':'mood-shell-picker'}`}>
   <a href="/zz/" className="back-link"><ArrowLeft size={15}/>回到小空间</a>
   <span className="mood-eyebrow">A SOFT PLACE TO LAND</span>
   {letter?<><section className="mood-letter" aria-labelledby="mood-letter-title">
    <span className="mood-letter-heart" aria-hidden="true">💗</span><h1 id="mood-letter-title">我看到啦</h1>
-   <p>今天的你是「{labels}」。</p>
+   <p>今天的你是：</p><div className="mood-letter-tags">{letter.moods.map(id=><span key={id} className={`mood-tag mood-tag-${groups.find(g=>g.ids.includes(id))!.id}`}>{moods.find(m=>m.id===id)!.title}</span>)}</div>
    <blockquote className="mood-letter-quote">“{letter.quote}”</blockquote>
    <p className="mood-letter-close">{letter.close}<br/>我会在这里陪着你。💗</p>
    <p className="mood-letter-signature">最爱你的男朋友</p>
@@ -70,11 +75,11 @@ export function MoodApp(){
    <h1>宝宝心情充电站</h1>
    <p className="mood-intro">无论今天怎么样，你都值得被爱。<br/><span>心情可以不止一种，选好后一起交给我。</span></p>
    <form onSubmit={sendSelection}>
-    <section className="mood-grid" aria-label="今天的心情，可多选">
-     {moods.map(item=>{const selected=draft.includes(item.id);return <button type="button" key={item.id} className={`mood-choice ${selected?'selected':''}`} aria-pressed={selected} onClick={()=>setDraft(current=>selected?current.filter(id=>id!==item.id):[...current,item.id])} disabled={busy}>
+    <section className="mood-groups" aria-label="今天的心情，可多选">
+     {groups.map(group=><section key={group.id} className={`mood-group mood-group-${group.id}`} aria-labelledby={`mood-group-${group.id}`}><h2 id={`mood-group-${group.id}`}>{group.title}</h2><div className="mood-grid">{group.ids.map(id=>moods.find(m=>m.id===id)!).map(item=>{const selected=draft.includes(item.id);return <button type="button" key={item.id} className={`mood-choice ${selected?'selected':''}`} aria-pressed={selected} onClick={()=>setDraft(current=>selected?current.filter(id=>id!==item.id):[...current,item.id])} disabled={busy}>
       <span className="mood-choice-heading"><span className="mood-icon">{item.icon}</span><span className="mood-check" aria-hidden="true">{selected&&<Check size={12}/>}</span></span>
       <strong>{item.title}</strong><small>{item.detail}</small>
-     </button>;})}
+     </button>;})}</div></section>)}
     </section>
     <div className="mood-send-row"><span aria-live="polite">{draft.length?`装好了 ${draft.length} 种小心情`:'可以多选，也可以晚点再来'}</span><button className="mood-send" disabled={!draft.length||busy}>{busy?'写一小句话，寄给你…':'把心情寄给你'}<Heart size={14}/></button></div>
    </form>
