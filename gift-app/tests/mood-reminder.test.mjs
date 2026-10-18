@@ -15,7 +15,8 @@ test('Evening reminders use an evening greeting and invalid slots fail',()=>{
 });
 test('reminder uses compact two-column navigation links for all eight moods',()=>{
  const html=reminderHtml('test-token','evening');
- assert.equal((html.match(/<a href=/g)||[]).length,8);
+ assert.equal((html.match(/\?moods=/g)||[]).length,8);
+ assert.match(html,/token=test-token&custom=1/);
  assert.match(html,/table-layout:fixed/);
  assert.match(html,/width:50%/);
  assert.match(html,/\?moods=happy&token=test-token/);

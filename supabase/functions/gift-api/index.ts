@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
-import { parseMoods, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
+import { parseMoodSelection, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
 import { TEASE_MODEL, teaseRequest, validateTease } from './tease.mjs';
 import { validateMedia, parseVerification, verificationRequest } from './face-verification.mjs';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {auth:{persistSession:false}});
@@ -18,19 +18,19 @@ function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('
 async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const address=emailFrom(from);const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:address?`最爱你的男朋友 <${address}>`:from,to:[to],subject,text:body,...(html?{html}:{})}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
 function emailFrom(value:string|undefined){const found=(value||'').match(/<([^>]+)>/)||(value||'').match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);return found?.[1]||found?.[0]||null;}
 function ownerEmail(){return 'shyliu.china@gmail.com';}
-async function generateMoodQuote(moods:string[]) {
+async function generateMoodQuote(moods:string[],customMood:string) {
  const key=Deno.env.get('MOOD_REPLY_API_KEY')||Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');
  if(!key)throw Error('MOOD_REPLY_UNAVAILABLE');
  try {
-  const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':moodUrl,'X-Title':'A little note for you'},body:JSON.stringify(moodQuoteRequest(moods,Deno.env.get('MOOD_REPLY_MODEL')||Deno.env.get('TEASE_MODEL')||TEASE_MODEL)),signal:AbortSignal.timeout(25000)});
+  const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':moodUrl,'X-Title':'A little note for you'},body:JSON.stringify(moodQuoteRequest(moods,Deno.env.get('MOOD_REPLY_MODEL')||Deno.env.get('TEASE_MODEL')||TEASE_MODEL,customMood)),signal:AbortSignal.timeout(25000)});
   if(!response.ok)throw Error('MOOD_REPLY_UNAVAILABLE');
   const result=await response.json();
   if(result.choices?.[0]?.finish_reason!=='stop')throw Error('MOOD_REPLY_UNAVAILABLE');
   return validateMoodQuote(result.choices[0].message?.content);
  }catch{throw Error('MOOD_REPLY_UNAVAILABLE');}
 }
-async function sendMoodMail(userId:string,email:string,moods:string[],key:string){
- const quote=await generateMoodQuote(moods),mail=confirmationMail(moods,quote);
+async function sendMoodMail(userId:string,email:string,moods:string[],key:string,customMood:string){
+ const quote=await generateMoodQuote(moods,customMood),mail=confirmationMail(moods,quote,customMood);
  await sendMail(email,mail.subject,mail.text,key,mail.html);
  await sendMail(ownerEmail(),`她刚刚选择了「${mail.labels}」 💗`,`她刚刚选择了「${mail.labels}」。\n\n${needsComfort(moods)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份小心情已经寄到你这里了。'}\n\n给她的小纸条：“${quote}”\n\n如果想说话，她会来找你。`,`${key}/owner`);
  return {quote,close:mail.close};
@@ -127,9 +127,9 @@ Deno.serve(async req=>{
    if(!record||Date.parse(record.expires_at)<Date.now())return reply({error:'LINK_EXPIRED'},400);
    if(!record.email)throw Error('MOOD_EMAIL_REQUIRED');
    if(action==='mood-email-open')return reply({ready:true});
-   const moods=parseMoods(body.moods??body.mood),entryId=crypto.randomUUID();
-   const message=await sendMoodMail(record.user_id,record.email,moods,`mood-email-select/${entryId}`);
-   return reply({moods,...message,mailSent:true,release:'mood-multi-quote-v1'});
+   const {moods,customMood}=parseMoodSelection(body.moods??body.mood,body.customMood),entryId=crypto.randomUUID();
+   const message=await sendMoodMail(record.user_id,record.email,moods,`mood-email-select/${entryId}`,customMood);
+   return reply({moods,customMood,...message,mailSent:true,release:'mood-custom-v1'});
  }
  if(action==='enter') {
    const ip=req.headers.get('cf-connecting-ip')||req.headers.get('x-real-ip')||req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
@@ -214,12 +214,12 @@ Deno.serve(async req=>{
  }
  if(action==='mood-select') {
    if(member.role!=='player')throw Error('FORBIDDEN');
-   const moods=parseMoods(body.moods??body.mood);
+   const {moods,customMood}=parseMoodSelection(body.moods??body.mood,body.customMood);
    const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
    if(!sub)throw Error('MOOD_EMAIL_REQUIRED');
    const entryId=crypto.randomUUID();
-   const message=await sendMoodMail(user.id,sub.email,moods,`mood-select/${entryId}`);
-   return reply({moods,...message,mailSent:true,release:'mood-multi-quote-v1'});
+   const message=await sendMoodMail(user.id,sub.email,moods,`mood-select/${entryId}`,customMood);
+   return reply({moods,customMood,...message,mailSent:true,release:'mood-custom-v1'});
  }
  if(action==='media-upload-intent') {
   if(member.role!=='player')throw Error('FORBIDDEN');visionConfig();
