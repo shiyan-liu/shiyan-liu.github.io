@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+  <defs>
+    <linearGradient id="pink" x2="0" y2="1"><stop stop-color="#ffe0f0"/><stop offset=".4" stop-color="#f5badc"/><stop offset="1" stop-color="#ec9dc8"/></linearGradient>
+    <linearGradient id="white" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eeeeef"/></linearGradient>
+    <path id="heart" d="M24 44C21 41 2 27 2 14C2 2 18-2 24 10C30-2 46 2 46 14C46 27 27 41 24 44Z"/>
+    <g id="pink-heart"><use href="#heart" fill="url(#pink)" stroke="#edb6d4" stroke-width="1.2"/><path d="M7 14C7 5 18 4 22 12M28 10C34 3 43 7 43 14" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.7" stroke-linecap="round"/></g>
+    <g id="white-heart"><use href="#heart" fill="url(#white)" stroke="#e8e8eb" stroke-width="1.2"/><path d="M7 14C7 5 18 4 22 12M28 10C34 3 43 7 43 14" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></g>
+  </defs>
+  <g opacity=".78">
+    <use href="#white-heart" transform="translate(25 24) scale(1.25)"/>
+    <use href="#pink-heart" transform="translate(195 24) scale(1.25)"/>
+    <use href="#pink-heart" transform="translate(25 198) scale(1.25)"/>
+    <use href="#white-heart" transform="translate(195 198) scale(1.25)"/>
+    <use href="#pink-heart" transform="translate(135 127) scale(.55)"/>
+    <use href="#white-heart" transform="translate(278 127) scale(.55)"/>
+    <use href="#white-heart" transform="translate(135 282) scale(.55)"/>
+    <use href="#pink-heart" transform="translate(278 282) scale(.55)"/>
+  </g>
+</svg>

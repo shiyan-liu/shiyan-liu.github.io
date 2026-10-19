@@ -7,6 +7,7 @@ import {LockKeyhole,LogOut,UploadCloud,X,CheckCircle2,AlertCircle} from 'lucide-
 import {MoodApp} from './mood';
 import './style.css';
 import './mood.css';
+import './heart-theme.css';
 declare global {interface Window {GIFT_CONFIG?:{supabaseUrl:string;publishableKey:string}}}
 type Guess={id:string;text:string;score:number;is_correct:boolean;created_at:string};
 type Reveal={answer:string;text:string;image:string|null};

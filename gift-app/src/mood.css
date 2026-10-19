@@ -1,4 +1,5 @@
 .mood-shell-confirmed{max-width:560px;padding-top:36px}
+.mood-app-letter .mood-letter{background:#fffafd;box-shadow:0 10px 35px #9b6b850b}
 .mood-shell-confirmed .back-link{margin-bottom:24px}
 .mood-shell-confirmed .mood-eyebrow{display:block;margin-bottom:14px}
 .mood-letter{padding:30px 34px;border:1px solid #ecdfe6;border-radius:16px;background:#fffafd;box-shadow:0 8px 30px #724d5f07;animation:letter-arrive .25s ease-out}

@@ -1,0 +1,6 @@
+.space-hub,.gift-app,.mood-app{background-color:#fff;background-image:url('./assets/mood-hearts.svg');background-repeat:repeat;background-size:320px 320px;background-position:center 65px}
+.space-wrap,.gift-app .shell,.mood-shell{position:relative;isolation:isolate}
+.space-wrap::before,.gift-app .shell::before,.mood-shell::before{content:'';position:absolute;z-index:-1;inset:0 -22px;background:linear-gradient(90deg,#ffffff00,#fffffff2 24px,#fffffff2 calc(100% - 24px),#ffffff00);pointer-events:none}
+.space-nav,.gift-app .topbar,.mood-app .topbar{background:#ffffffed}
+.gift-app .app-footer{background:#fffffff2}
+@media(max-width:580px){.space-hub,.gift-app,.mood-app{background-size:256px 256px}.space-wrap::before,.gift-app .shell::before,.mood-shell::before{inset:0 -6px;background:#ffffffc9}}

@@ -17,7 +17,7 @@ await build({
   format: 'esm',
   platform: 'browser',
   target: 'es2020',
-  loader: { '.css': 'css' },
+  loader: { '.css': 'css', '.svg': 'dataurl' },
 });
 const template = await readFile(resolve(root, 'index.html'), 'utf8');
 const version = async name => createHash('sha256').update(await readFile(resolve(output, 'assets', name))).digest('hex').slice(0, 12);
@@ -32,3 +32,4 @@ await mkdir(pageOutput,{recursive:true});
 await writeFile(resolve(pageOutput,'index.html'),`<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script src="/zz/gift/config.js"></script><title>${title}</title></head><body><div id="root"></div><link rel="stylesheet" href="/zz/gift/assets/app.css?v=${cssVersion}"><script type="module" src="/zz/gift/assets/app.js?v=${jsVersion}"></script></body></html>`);
 }
 await copyFile(resolve(root, 'public/config.js'), resolve(output, 'config.js'));
+await copyFile(resolve(root, 'public/mood-hearts.png'), resolve(output, 'assets/mood-hearts.png'));

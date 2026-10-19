@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
+import { mailFrame, plainMailHtml } from './mail-frame.mjs';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
 import { parseMoodSelection, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
 import { TEASE_MODEL, teaseRequest, validateTease } from './tease.mjs';
@@ -15,7 +16,7 @@ const publicUrl='https://shiyanliu.com/zz/gift/';
 const moodUrl='https://shiyanliu.com/zz/mood/';
 function mailConfig(){const key=Deno.env.get('RESEND_API_KEY'),from=Deno.env.get('GIFT_FROM_EMAIL');if(!key||!from)throw Error('MAIL_UNAVAILABLE');return {key,from};}
 function visionConfig(){const key=Deno.env.get('VISION_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');const model=Deno.env.get('VISION_MODEL');if(!key||!model)throw Error('FACE_UNAVAILABLE');return {key,model};}
-async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const address=emailFrom(from);const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:address?`最爱你的男朋友 <${address}>`:from,to:[to],subject,text:body,...(html?{html}:{})}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
+async function sendMail(to:string,subject:string,body:string,idempotencyKey:string,html?:string){const {key,from}=mailConfig();const address=emailFrom(from);const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify({from:address?`最爱你的男朋友 <${address}>`:from,to:[to],subject,text:body,html:mailFrame(html||plainMailHtml(body))}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('MAIL_UNAVAILABLE');return await response.json();}
 function emailFrom(value:string|undefined){const found=(value||'').match(/<([^>]+)>/)||(value||'').match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/);return found?.[1]||found?.[0]||null;}
 function ownerEmail(){return 'shyliu.china@gmail.com';}
 async function generateMoodQuote(moods:string[],customMood:string) {
