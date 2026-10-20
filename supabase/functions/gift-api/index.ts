@@ -171,12 +171,17 @@ Deno.serve(async req=>{
  const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='snack-state') {
-   const items=check(await db.from('snack_inventory').select('id,finished,updated_at'));
+   const items=check(await db.from('snack_inventory').select('id,finished,rating,updated_at'));
    return reply({items});
  }
  if(action==='snack-update') {
    if(typeof body.id!=='string'||!snackProducts.some(p=>p.id===body.id)||typeof body.finished!=='boolean')throw Error('INVALID_INPUT');
-   const item=check(await db.from('snack_inventory').upsert({id:body.id,finished:body.finished,updated_at:new Date().toISOString()}).select('id,finished,updated_at').single());
+   const item=check(await db.from('snack_inventory').update({finished:body.finished,updated_at:new Date().toISOString()}).eq('id',body.id).select('id,finished,rating,updated_at').single());
+   return reply({item});
+ }
+ if(action==='snack-rate') {
+   if(typeof body.id!=='string'||!snackProducts.some(p=>p.id===body.id)||typeof body.rating!=='number'||!Number.isFinite(body.rating)||body.rating<0||body.rating>5||!Number.isInteger(body.rating*2))throw Error('INVALID_INPUT');
+   const item=check(await db.from('snack_inventory').update({rating:body.rating===0?null:body.rating,updated_at:new Date().toISOString()}).eq('id',body.id).select('id,finished,rating,updated_at').single());
    return reply({item});
  }
  if(action==='state') return reply(await state(user.id));
