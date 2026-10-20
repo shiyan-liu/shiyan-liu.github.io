@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
+import snackProducts from '../../../gift-app/src/snacks-data.json' with {type:'json'};
 import { mailFrame, plainMailHtml } from './mail-frame.mjs';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
 import { parseMoodSelection, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
@@ -169,6 +170,15 @@ Deno.serve(async req=>{
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
  const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
+ if(action==='snack-state') {
+   const items=check(await db.from('snack_inventory').select('id,finished,updated_at'));
+   return reply({items});
+ }
+ if(action==='snack-update') {
+   if(typeof body.id!=='string'||!snackProducts.some(p=>p.id===body.id)||typeof body.finished!=='boolean')throw Error('INVALID_INPUT');
+   const item=check(await db.from('snack_inventory').upsert({id:body.id,finished:body.finished,updated_at:new Date().toISOString()}).select('id,finished,updated_at').single());
+   return reply({item});
+ }
  if(action==='state') return reply(await state(user.id));
  if(action==='tease') {
   if(member.role!=='player')throw Error('FORBIDDEN');

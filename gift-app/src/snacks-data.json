@@ -1,0 +1,218 @@
+[
+  {
+    "id": "100088472687",
+    "name": "金豆芽金银花柚子汁",
+    "size": "100 ml × 22 袋",
+    "category": "fruit",
+    "note": "口渴的时候，给自己来一口清甜。",
+    "image": "/zz/snacks/assets/100088472687.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10163336151885",
+    "name": "益生元岩烧海苔 · 原味",
+    "size": "7.5 g × 20 袋",
+    "category": "savory",
+    "note": "薄薄一片，也能把小馋嘴照顾好。",
+    "image": "/zz/snacks/assets/10163336151885.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10023678233568",
+    "name": "Member’s Mark 黄油鸡蛋卷",
+    "size": "608 g · 1 罐",
+    "category": "sweet",
+    "note": "咬一口酥酥的，慢慢吃就好。",
+    "image": "/zz/snacks/assets/10023678233568.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10024905493905",
+    "name": "Member’s Mark 有机板栗仁",
+    "size": "100 g × 10 袋",
+    "category": "sweet",
+    "note": "软软糯糯，陪你歇一小会儿。",
+    "image": "/zz/snacks/assets/10024905493905.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10180309637164",
+    "name": "有滋时肉松戚风蛋糕",
+    "size": "1 kg",
+    "category": "sweet",
+    "note": "忙起来也记得给自己留一点松软。",
+    "image": "/zz/snacks/assets/10180309637164.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10092492882993",
+    "name": "FINUTE 蒜味虾片",
+    "size": "300 g · 1 袋",
+    "category": "savory",
+    "note": "咔嚓咔嚓，适合陪你看点喜欢的。",
+    "image": "/zz/snacks/assets/10092492882993.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10153938998112",
+    "name": "卡乐比 Jagabee 淡盐味薯条",
+    "size": "600 g · 1 盒",
+    "category": "savory",
+    "note": "给想吃点咸香的你备着。",
+    "image": "/zz/snacks/assets/10153938998112.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "65791770474",
+    "name": "海盐苏打饼干",
+    "size": "1.5 kg · 1 袋",
+    "category": "savory",
+    "note": "肚子有点空的时候，先垫一小口。",
+    "image": "/zz/snacks/assets/65791770474.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10145236930157",
+    "name": "Member’s Mark 黄油华夫饼",
+    "size": "1.02 kg",
+    "category": "sweet",
+    "note": "给平常的一天，添一点黄油香。",
+    "image": "/zz/snacks/assets/10145236930157.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10192696970059",
+    "name": "溏心鹌鹑蛋",
+    "size": "800 g",
+    "category": "savory",
+    "note": "小小一颗，留给想解馋的时候。",
+    "image": "/zz/snacks/assets/10192696970059.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10102049763826",
+    "name": "好想你精选免洗灰枣",
+    "size": "125 g × 8 袋",
+    "category": "sweet",
+    "note": "名字替我说了：好想你。",
+    "image": "/zz/snacks/assets/10102049763826.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10035608528614",
+    "name": "泰国椰香脆卷",
+    "size": "400 g",
+    "category": "sweet",
+    "note": "把一点椰子香，留在你的下午。",
+    "image": "/zz/snacks/assets/10035608528614.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10127303209425",
+    "name": "柠檬酸辣去骨凤爪",
+    "size": "580 g",
+    "category": "savory",
+    "note": "想吃点有滋味的，就打开这一份。",
+    "image": "/zz/snacks/assets/10127303209425.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10158581366012",
+    "name": "轻盐橄榄油传统海苔",
+    "size": "180 g · 1 袋",
+    "category": "savory",
+    "note": "今天想吃轻轻脆脆的，就选它。",
+    "image": "/zz/snacks/assets/10158581366012.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10228955199393",
+    "name": "Member’s Mark NFC 果浆果冻",
+    "size": "2.2 kg · 1 桶",
+    "category": "fruit",
+    "note": "小小一口果香，慢慢挑喜欢的。",
+    "image": "/zz/snacks/assets/10228955199393.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10195523034831",
+    "name": "皮乐士剥皮软糖",
+    "size": "1,050 g",
+    "category": "fruit",
+    "note": "剥开一颗，像拆一个小小惊喜。",
+    "image": "/zz/snacks/assets/10195523034831.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10108939910311",
+    "name": "松茸有机鱼皮花生",
+    "size": "1 kg · 1 罐",
+    "category": "savory",
+    "note": "香香脆脆，陪你度过不赶时间的片刻。",
+    "image": "/zz/snacks/assets/10108939910311.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10076588888210",
+    "name": "Member’s Mark 乳酸菌蒟蒻果冻",
+    "size": "1.8 kg",
+    "category": "fruit",
+    "note": "想吃点清甜的时候，这里还有一份。",
+    "image": "/zz/snacks/assets/10076588888210.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10101897475631",
+    "name": "泰国金枕冻干榴莲",
+    "size": "180 g · 1 袋",
+    "category": "fruit",
+    "note": "把浓浓的果香，留给想尝它的那天。",
+    "image": "/zz/snacks/assets/10101897475631.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10091922001315",
+    "name": "缤纷乐享混合口味巧克力",
+    "size": "1 kg",
+    "category": "sweet",
+    "note": "挑一颗喜欢的，今天也值得一点甜。",
+    "image": "/zz/snacks/assets/10091922001315.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10207424937271",
+    "name": "麦提莎麦芽脆心黑巧克力球",
+    "size": "669 g",
+    "category": "sweet",
+    "note": "外面甜一点，里面脆一点，都给你。",
+    "image": "/zz/snacks/assets/10207424937271.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10211599295792",
+    "name": "吉士汀缤纷奶酪棒",
+    "size": "600 g · 1 袋",
+    "category": "sweet",
+    "note": "给嘴巴一点奶香，给今天一点温柔。",
+    "image": "/zz/snacks/assets/10211599295792.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10224324318015",
+    "name": "FRUTIPS 0 糖爆浆软糖 · 双橙",
+    "size": "480 g · 1 袋",
+    "category": "fruit",
+    "note": "橙子味的小快乐，等你来拆开。",
+    "image": "/zz/snacks/assets/10224324318015.jpg",
+    "quantity": 1
+  },
+  {
+    "id": "10114466730921",
+    "name": "榛子味威化饼干",
+    "size": "45 g × 30 条",
+    "category": "sweet",
+    "note": "一层一层的酥脆，陪你慢慢放松。",
+    "image": "/zz/snacks/assets/10114466730921.jpg",
+    "quantity": 1
+  }
+]
