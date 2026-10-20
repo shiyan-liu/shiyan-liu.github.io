@@ -7,7 +7,7 @@ from reportlab.lib.colors import HexColor,Color
 from reportlab.lib.utils import ImageReader
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 products=json.loads((ROOT/'gift-app/src/snacks-data.json').read_text())
-OUT=ROOT/'output/pdf/snack-list.pdf';OUT.parent.mkdir(parents=True,exist_ok=True)
+OUT=ROOT/'output/pdf/zz宝宝的零食清单.pdf';OUT.parent.mkdir(parents=True,exist_ok=True)
 pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
 c=canvas.Canvas(str(OUT),pagesize=(595.28,841.89));c.setTitle('给你的零食小柜');c.setAuthor('最爱你的男朋友')
 ink=HexColor('#55434d');rose=HexColor('#ac718e');muted=HexColor('#9e8b95');line=HexColor('#ebdfe5')
@@ -44,5 +44,5 @@ for page,(cat,title,sub) in enumerate(cats,1):
  txt(495,43,f'{page} / 3',9,muted)
  c.showPage()
 c.save()
-shutil.copyfile(OUT,ROOT/'gift-app/public/snacks/snack-list.pdf')
+shutil.copyfile(OUT,ROOT/'gift-app/public/snacks/zz宝宝的零食清单.pdf')
 print(OUT)
