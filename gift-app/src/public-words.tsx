@@ -40,7 +40,7 @@ export function PublicWordsApp(){
  async function copy(){const link=`${location.origin}/w/#${state?.room.code||input}`;try{await navigator.clipboard.writeText(link);setNotice('邀请链接已复制，发给另一位玩家就好。');}catch{setNotice('复制下方的邀请链接，发给另一位玩家吧。');}}
  async function submit(e:React.FormEvent){e.preventDefault();if(!cred.current||!state)return;await run(async()=>{const r=await request(cred.current!,'submit',{gameId:state.game.id,round:state.game.current_round,word:word.trim()});apply(r);setWord('');setNotice('词已封好，两个人都提交后一起揭晓。');});}
  async function start(){setConfirm(false);if(!cred.current||!state)return;await run(async()=>{const r=await request(cred.current!,'start',{gameId:state.history[0].id});selected.current=null;setPast(null);setOlder([]);apply(r);setNotice('新的一局开始啦。');});}
- function choose(id:string|null){selected.current=id;setPast(id);void refresh(true);}
+ function choose(id:string|null){const target=id===current.current?.history[0]?.id?null:id;selected.current=target;setPast(target);void refresh(true);}
  async function loadMore(){if(!cred.current)return;const list=[...(state?.history||[]),...older];await run(async()=>{const r=await request(cred.current!,'history',{before:list.at(-1)?.created_at});setOlder(s=>[...s,...r.history]);setMore(r.history.length===20);});}
  const game=state?.game,round=state?.rounds.find(r=>r.number===game?.current_round),revealed=state?.rounds.filter(r=>r.revealed)||[],last=revealed.at(-1),mine=state?.room.seat==='a'?round?.aSubmitted:round?.bSubmitted,other=state?.room.seat==='a'?round?.bSubmitted:round?.aSubmitted;
  const historyList=Array.from(new Map([...(state?.history||[]),...older].map(g=>[g.id,g])).values());
