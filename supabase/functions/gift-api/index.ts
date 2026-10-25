@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
+import { publicWordRound } from './word-game.mjs';
 import snackProducts from '../../../gift-app/src/snacks-data.json' with {type:'json'};
 import { mailFrame, plainMailHtml } from './mail-frame.mjs';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
@@ -170,6 +171,27 @@ Deno.serve(async req=>{
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
  const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
+ if(action==='word-state') {
+   const games=check(await db.from('word_games').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(51));
+   const requested=body.gameId?uuid(body.gameId):games[0]?.id;
+   const game=requested?check(await db.from('word_games').select('*').eq('id',requested).maybeSingle()):null;
+   const rows=game?check(await db.from('word_rounds').select('*').eq('game_id',game.id).order('round_no')):[];
+   return reply({game,rounds:rows.map(publicWordRound),history:games.slice(0,50),hasMore:games.length>50});
+ }
+ if(action==='word-history') {
+   const before=text(body.before,60);
+   const history=check(await db.from('word_games').select('*').lt('created_at',before).order('created_at',{ascending:false}).order('id',{ascending:false}).limit(51));
+   return reply({history:history.slice(0,50),hasMore:history.length>50});
+ }
+ if(action==='word-start') {
+   const gameId=check(await db.rpc('word_game_start',{p_expected_game:body.expectedGame?uuid(body.expectedGame):null}));
+   return reply({gameId});
+ }
+ if(action==='word-submit') {
+   if(!['lsy','zz'].includes(body.seat)||!Number.isInteger(body.round)||body.round<1)throw Error('INVALID_INPUT');
+   check(await db.rpc('word_game_submit',{p_game:uuid(body.gameId),p_round:body.round,p_seat:body.seat,p_word:text(body.word,80)}));
+   return reply({saved:true});
+ }
  if(action==='snack-state') {
    const items=check(await db.from('snack_inventory').select('id,finished,rating,updated_at'));
    return reply({items});
@@ -283,7 +305,7 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
+ const allowed=['WORD_GAME_CHANGED','WORD_ALREADY_SENT','FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
  return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);

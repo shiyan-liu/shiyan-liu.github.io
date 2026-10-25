@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {cfg,supabase} from './space-session';
 import {HubApp} from './hub';
+import {WordsApp} from './words';
 import {SnacksApp} from './snacks';
 import './hub.css';
 import {LockKeyhole,LogOut,UploadCloud,X,CheckCircle2,AlertCircle} from 'lucide-react';
@@ -62,4 +63,4 @@ function App(){const [ready,setReady]=useState(false),[state,setState]=useState<
  {(error||notice)&&<Toast message={error||notice} error={!!error} onClose={()=>{setError('');setNotice('');}}/>}
  </div>;
 }
-createRoot(document.getElementById('root')!).render(<React.StrictMode>{location.pathname.startsWith('/zz/snacks')?<SnacksApp/>:location.pathname.startsWith('/zz/mood')?<MoodApp/>:location.pathname.startsWith('/zz/gift')||location.pathname.startsWith('/gift')?<App/>:<HubApp/>}</React.StrictMode>);
+createRoot(document.getElementById('root')!).render(<React.StrictMode>{location.pathname.startsWith('/zz/words')?<WordsApp/>:location.pathname.startsWith('/zz/snacks')?<SnacksApp/>:location.pathname.startsWith('/zz/mood')?<MoodApp/>:location.pathname.startsWith('/zz/gift')||location.pathname.startsWith('/gift')?<App/>:<HubApp/>}</React.StrictMode>);
