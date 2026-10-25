@@ -32,6 +32,7 @@ await mkdir(pageOutput,{recursive:true});
 await writeFile(resolve(pageOutput,'index.html'),`<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script src="/zz/gift/config.js"></script><title>${title}</title></head><body><div id="root"></div><link rel="stylesheet" href="/zz/gift/assets/app.css?v=${cssVersion}"><script type="module" src="/zz/gift/assets/app.js?v=${jsVersion}"></script></body></html>`);
 }
 await copyFile(resolve(root, 'public/config.js'), resolve(output, 'config.js'));
+await cp(resolve(root,'public/audio'),resolve(root,'../zz/audio'),{recursive:true});
 await copyFile(resolve(root, 'public/mood-hearts.png'), resolve(output, 'assets/mood-hearts.png'));
 await cp(resolve(root, 'public/snacks'), resolve(root, '../zz/snacks/assets'), { recursive: true });
 

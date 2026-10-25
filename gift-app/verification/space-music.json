@@ -1,0 +1,17 @@
+{
+  "source": "User-provided SHE-我爱你.mp3, entire recording converted to AAC",
+  "decodedSeconds": 332.213333,
+  "browserDurationSeconds": 332.277551,
+  "checks": [
+    "Chrome audio reaches readyState 4 and plays with no media error",
+    "Loop enabled on the private shared audio element",
+    "Navigation hub, private words, snacks, mood and gift pages contain the music control",
+    "Internal private-page navigation retains the audio element and increasing playback position",
+    "Off switch pauses audio and reload keeps it off",
+    "Saved on preference survives reload; blocked autoplay shows click-to-resume message",
+    "Click-to-resume restores saved playback position (37 seconds observed)",
+    "Public /w/ page contains zero audio elements and zero BGM controls"
+  ],
+  "storage": "Preference in localStorage; tab playback position in sessionStorage; no cloud writes",
+  "note": "Browser autoplay policy may require another click after a full reload. Internal navigation keeps playback uninterrupted."
+}
