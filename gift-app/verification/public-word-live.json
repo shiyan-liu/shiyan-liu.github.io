@@ -1,0 +1,14 @@
+{
+  "environment": "production Supabase anonymous HTTP integration",
+  "passed": 8,
+  "checks": [
+    "anonymous creation succeeds",
+    "concurrent join grants only one second seat",
+    "forged seat ignored and first word sealed",
+    "first player sees revealed words through automatic state request",
+    "concurrent submissions win and version sync works",
+    "room history survives new game",
+    "anonymous clients denied private game and direct public tables",
+    "existing private game unchanged"
+  ]
+}

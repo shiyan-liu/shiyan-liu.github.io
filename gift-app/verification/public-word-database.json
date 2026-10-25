@@ -1,0 +1,16 @@
+{
+  "environment": "local PostgreSQL via PGlite; not production integration",
+  "passed": 10,
+  "checks": [
+    "migration compiles in PostgreSQL",
+    "submission requires two joined seats",
+    "two stable seats; third party cannot access a full room",
+    "first word stays sealed for both players; cannot overwrite",
+    "second submission reveals both and advances the round",
+    "NFKC/case normalization wins; version polling detects changes",
+    "new games persist history; incomplete archived words remain sealed",
+    "create rate budget blocks sixth hourly attempt",
+    "anonymous and signed-in clients cannot read tables or invoke private RPCs directly",
+    "expiry denies access and cleanup cascades public room data"
+  ]
+}

@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
 import { publicWordRound } from './word-game.mjs';
+import { publicWordHandler } from './public-words.mjs';
 import snackProducts from '../../../gift-app/src/snacks-data.json' with {type:'json'};
 import { mailFrame, plainMailHtml } from './mail-frame.mjs';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
@@ -100,6 +101,7 @@ Deno.serve(async req=>{
  try {
  const raw = await req.text(); if(raw.length>16000) throw new Error('INVALID_INPUT');
  const body = JSON.parse(raw); const action = text(body.action,30);
+ if(action.startsWith('public-word-')){const result=await publicWordHandler(db,req,body,Deno.env.get('LOGIN_RATE_SALT')||'public-word-rooms');return reply(result.data,result.status);}
  if(action==='mood-reminder') {
    const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
    const legacySecret=Deno.env.get('MOOD_CRON_SECRET');

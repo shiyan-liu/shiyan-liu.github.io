@@ -1,0 +1,12 @@
+{
+  "environment": "Chrome UI at 127.0.0.1:5173/w/ connected to production Supabase",
+  "checks": [
+    "Create room through UI without login",
+    "Second independent client joins; creator UI updates automatically",
+    "Creator submits first; waiting UI has automatic sync message",
+    "Second client submits same word; creator UI reaches victory without click or reload",
+    "Reload restores seat and completed game"
+  ],
+  "waitingPollIntervalMs": 2000,
+  "privatePollIntervalMs": 2000
+}
