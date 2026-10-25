@@ -6,6 +6,7 @@ import snackProducts from '../../../gift-app/src/snacks-data.json' with {type:'j
 import { mailFrame, plainMailHtml } from './mail-frame.mjs';
 import { reminderClock, reminderCopy, reminderHtml } from './mood-reminder.mjs';
 import { parseMoodSelection, moodQuoteRequest, validateMoodQuote, confirmationMail, needsComfort } from './mood-response.mjs';
+import {handleMoodTalk,talkRequest,validateTalk,memoryCandidates} from './mood-talk.mjs';
 import { TEASE_MODEL, teaseRequest, validateTease } from './tease.mjs';
 import { validateMedia, parseVerification, verificationRequest } from './face-verification.mjs';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {auth:{persistSession:false}});
@@ -33,11 +34,30 @@ async function generateMoodQuote(moods:string[],customMood:string) {
   return validateMoodQuote(result.choices[0].message?.content);
  }catch{throw Error('MOOD_REPLY_UNAVAILABLE');}
 }
-async function sendMoodMail(userId:string,email:string,moods:string[],key:string,customMood:string){
- const quote=await generateMoodQuote(moods,customMood),mail=confirmationMail(moods,quote,customMood);
+async function sendMoodMail(userId:string,email:string,moods:string[],key:string,customMood:string,savedQuote?:string){
+ const quote=savedQuote??await generateMoodQuote(moods,customMood),mail=confirmationMail(moods,quote,customMood);
  await sendMail(email,mail.subject,mail.text,key,mail.html);
  await sendMail(ownerEmail(),`她刚刚选择了「${mail.labels}」 💗`,`她刚刚选择了「${mail.labels}」。\n\n${needsComfort(moods)?'今天不用特意追问，也不用让她解释。就让她照自己的节奏来。':'这份小心情已经寄到你这里了。'}\n\n给她的小纸条：“${quote}”\n\n如果想说话，她会来找你。`,`${key}/owner`);
  return {quote,close:mail.close};
+}
+
+
+async function moodTalk(userId:string,email:string|null,action:string,body:any){
+ if(!check(await db.rpc('gift_rate',{p_user:userId,p_action:'mood-talk',p_limit:10})))throw Error('RATE_LIMITED');
+ const generate=async(context:any)=>{
+  const key=Deno.env.get('MOOD_REPLY_API_KEY')||Deno.env.get('TEASE_API_KEY')||Deno.env.get('EMBEDDING_API_KEY');
+  if(!key)throw Error('MOOD_REPLY_UNAVAILABLE');
+  for(let attempt=0;attempt<2;attempt++){
+   try{
+    const input=talkRequest({...context,model:Deno.env.get('MOOD_REPLY_MODEL')||Deno.env.get('TEASE_MODEL')||TEASE_MODEL});
+    const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json','HTTP-Referer':moodUrl,'X-Title':'Little notes, a little closer'},body:JSON.stringify(input),signal:AbortSignal.timeout(25000)});
+    if(!response.ok)throw Error('MOOD_REPLY_UNAVAILABLE');const result=await response.json();
+    if(result.choices?.[0]?.finish_reason!=='stop')throw Error('MOOD_REPLY_UNAVAILABLE');
+    return validateTalk(result.choices[0].message?.content,context.recent||[],memoryCandidates(context));
+   }catch{if(attempt===1)throw Error('MOOD_REPLY_UNAVAILABLE');}
+  }
+ };
+ return await handleMoodTalk({db,userId,email,action,body,generate,send:(to:string,moods:string[],custom:string,quote:string,key:string)=>sendMoodMail(userId,to,moods,key,custom,quote)});
 }
 
 async function digest(value:string){const bytes=new TextEncoder().encode(value);return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -136,6 +156,11 @@ Deno.serve(async req=>{
    const message=await sendMoodMail(record.user_id,record.email,moods,`mood-email-select/${entryId}`,customMood);
    return reply({moods,customMood,...message,mailSent:true,release:'mood-custom-v1'});
  }
+ if(action.startsWith('mood-talk-')&&body.token){
+   const record=check(await db.from('mood_email_actions').select('user_id,email,expires_at').eq('token_hash',await digest(text(body.token,64))).maybeSingle());
+   if(!record||Date.parse(record.expires_at)<Date.now())throw Error('LINK_EXPIRED');
+   return reply(await moodTalk(record.user_id,record.email,action,body));
+ }
  if(action==='enter') {
    const ip=req.headers.get('cf-connecting-ip')||req.headers.get('x-real-ip')||req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
    const bytes=new TextEncoder().encode(ip+':' +(Deno.env.get('LOGIN_RATE_SALT')||''));
@@ -171,6 +196,11 @@ Deno.serve(async req=>{
  if(error||!user) return reply({error:'UNAUTHORIZED'},401);
  const {data:member,error:memberError} = await db.from('gift_members').select('*').eq('user_id',user.id).maybeSingle();
  if(memberError) throw memberError; if(!member) return reply({error:'FORBIDDEN'},403);
+ if(action.startsWith('mood-talk-')){
+   if(member.role!=='player')throw Error('FORBIDDEN');
+   const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
+   return reply(await moodTalk(user.id,sub?.email||null,action,body));
+ }
  const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
  if(action==='word-state') {
@@ -307,9 +337,9 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['WORD_GAME_CHANGED','WORD_ALREADY_SENT','FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
+ const allowed=['MOOD_TALK_EXPIRED','MOOD_TALK_CHANGED','MOOD_REPLY_UNAVAILABLE','RATE_LIMITED','WORD_GAME_CHANGED','WORD_ALREADY_SENT','FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'?429:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'||code==='RATE_LIMITED'?429:code==='MOOD_TALK_CHANGED'?409:400);
  }
 });

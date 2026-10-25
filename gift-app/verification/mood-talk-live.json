@@ -1,0 +1,14 @@
+{
+  "environment": "production HTTP and real OpenRouter model; email QA addressed to shyliu.china@gmail.com",
+  "memory": "Automatic, agent-maintained verbatim notes plus complete persistent turn archive",
+  "mailValidation": "Exact quote delivery and duplicate-save idempotency passed in preceding integration run; mail send path unchanged",
+  "checks": [
+    "real model returns continuations without automatically mailing",
+    "all turns archived and preferences remembered automatically",
+    "model revises memory after an explicit preference correction",
+    "new mood card receives maintained long-term memory and recent history",
+    "stale updates cannot overwrite another reply",
+    "complete turn archive survives temporary card expiry/removal",
+    "anonymous clients denied all conversation and memory tables"
+  ]
+}

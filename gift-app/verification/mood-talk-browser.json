@@ -1,0 +1,12 @@
+{
+  "environment": "Chrome at local /zz/mood/ connected to production backend",
+  "checks": [
+    "Original eight mood options and custom input remain",
+    "Selecting miss_you produces a real model reply and three clickable continuations",
+    "Freeform followup input and four folded tone choices are available",
+    "No remember/forget buttons or memory configuration are displayed",
+    "Ordinary interactions do not display a sent-mail confirmation",
+    "Explicit mail action and select-again action remain",
+    "Shared background music control remains available"
+  ]
+}
