@@ -16,8 +16,8 @@ const model = Deno.env.get('EMBEDDING_MODEL') || 'text-embedding-3-small';
 function check<T>(result: {data:T;error:any}): T { if(result.error) throw result.error; return result.data; }
 function text(value: unknown, max: number) { if(typeof value !== 'string' || !value.trim() || value.trim().length>max) throw new Error('INVALID_INPUT'); return value.trim(); }
 function signatureStrokes(value: unknown) {
- if(!Array.isArray(value)||value.length<1||value.length>24)throw new Error('INVALID_INPUT');
- return value.map(stroke=>{if(!Array.isArray(stroke)||stroke.length<2||stroke.length>2000)throw new Error('INVALID_INPUT');return stroke.map(point=>{if(!Array.isArray(point)||point.length!==2||typeof point[0]!=='number'||typeof point[1]!=='number'||!Number.isFinite(point[0])||!Number.isFinite(point[1])||point[0]<0||point[0]>600||point[1]<0||point[1]>160)throw new Error('INVALID_INPUT');return [Math.round(point[0]*10)/10,Math.round(point[1]*10)/10];});});
+ if(!Array.isArray(value)||value.length<1||value.length>128)throw new Error('INVALID_INPUT');
+ return value.map(stroke=>{if(!Array.isArray(stroke)||stroke.length<2||stroke.length>4000)throw new Error('INVALID_INPUT');return stroke.map(point=>{if(!Array.isArray(point)||point.length!==2||typeof point[0]!=='number'||typeof point[1]!=='number'||!Number.isFinite(point[0])||!Number.isFinite(point[1])||point[0]<0||point[0]>600||point[1]<0||point[1]>160)throw new Error('INVALID_INPUT');return [Math.round(point[0]*10)/10,Math.round(point[1]*10)/10];});});
 }
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
 const publicUrl='https://shiyanliu.com/zz/gift/';
@@ -123,8 +123,9 @@ Deno.serve(async req=>{
  if(req.method==='OPTIONS') return new Response(null,{status:204,headers});
  if(req.method!=='POST') return reply({error:'METHOD_NOT_ALLOWED'},405);
  try {
- const raw = await req.text(); if(raw.length>16000) throw new Error('INVALID_INPUT');
+ const raw = await req.text(); if(raw.length>300000) throw new Error('INVALID_INPUT');
  const body = JSON.parse(raw); const action = text(body.action,30);
+ if(action!=='promise-sign' && raw.length>16000) throw new Error('INVALID_INPUT');
  if(action.startsWith('public-word-')){const result=await publicWordHandler(db,req,body,Deno.env.get('LOGIN_RATE_SALT')||'public-word-rooms');return reply(result.data,result.status);}
  if(action==='mood-reminder') {
    const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

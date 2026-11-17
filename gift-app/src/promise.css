@@ -5,3 +5,5 @@
 .promise-resign,.promise-cancel{display:block;border:0;background:none;color:#a17e71;font:inherit;font-size:10px;cursor:pointer;margin:9px auto 0;padding:5px}.promise-draft-note{color:#aa8c80;font-size:9px;line-height:1.7;text-align:center}.promise-resign:focus-visible,.promise-cancel:focus-visible{outline:2px solid #b77969;outline-offset:2px}@media print{.promise-resign,.promise-cancel{display:none!important}.promise-signature-path{animation:none;stroke-dashoffset:0}}
 
 .promise-resign[hidden]{display:none}.promise-seal{pointer-events:none}
+
+.private-space.private-space-promise{padding-bottom:0;background:#fbf7f1}.promise-app{padding-bottom:16px}
