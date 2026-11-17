@@ -15,6 +15,10 @@ const origins = (Deno.env.get('ALLOWED_ORIGINS') || 'https://shiyanliu.com,https
 const model = Deno.env.get('EMBEDDING_MODEL') || 'text-embedding-3-small';
 function check<T>(result: {data:T;error:any}): T { if(result.error) throw result.error; return result.data; }
 function text(value: unknown, max: number) { if(typeof value !== 'string' || !value.trim() || value.trim().length>max) throw new Error('INVALID_INPUT'); return value.trim(); }
+function signatureStrokes(value: unknown) {
+ if(!Array.isArray(value)||value.length<1||value.length>24)throw new Error('INVALID_INPUT');
+ return value.map(stroke=>{if(!Array.isArray(stroke)||stroke.length<2||stroke.length>2000)throw new Error('INVALID_INPUT');return stroke.map(point=>{if(!Array.isArray(point)||point.length!==2||typeof point[0]!=='number'||typeof point[1]!=='number'||!Number.isFinite(point[0])||!Number.isFinite(point[1])||point[0]<0||point[0]>600||point[1]<0||point[1]>160)throw new Error('INVALID_INPUT');return [Math.round(point[0]*10)/10,Math.round(point[1]*10)/10];});});
+}
 function uuid(value: unknown) { if(typeof value !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value)) throw new Error('INVALID_INPUT'); return value; }
 const publicUrl='https://shiyanliu.com/zz/gift/';
 const moodUrl='https://shiyanliu.com/zz/mood/';
@@ -238,6 +242,18 @@ Deno.serve(async req=>{
    const item=check(await db.from('snack_inventory').update({rating:body.rating===0?null:body.rating,updated_at:new Date().toISOString()}).eq('id',body.id).select('id,finished,rating,updated_at').single());
    return reply({item});
  }
+ if(action==='promise-state') {
+  if(member.role!=='player')throw Error('FORBIDDEN');
+  const agreement=check(await db.from('love_promise_agreements').select('id,created_at,party_one_name,party_one_signature,party_one_signed_at,party_two_name,party_two_signature,party_two_signed_at,sealed_at').eq('id','zz-love-promise-v1').single());
+  return reply({agreement});
+ }
+ if(action==='promise-sign') {
+  if(member.role!=='player')throw Error('FORBIDDEN');
+  const party=body.party,name=text(body.name,40),signature=signatureStrokes(body.signature);
+  if(!['one','two'].includes(party))throw Error('INVALID_INPUT');
+  const agreement=check(await db.rpc('love_promise_sign',{p_party:party,p_name:name,p_signature:signature}));
+  return reply({agreement});
+ }
  if(action==='state') return reply(await state(user.id));
  if(action==='tease') {
   if(member.role!=='player')throw Error('FORBIDDEN');
@@ -337,9 +353,9 @@ Deno.serve(async req=>{
  throw new Error('INVALID_INPUT');
  } catch(e) {
  const message=e instanceof Error?e.message:String((e as any)?.message || '');
- const allowed=['MOOD_TALK_EXPIRED','MOOD_TALK_CHANGED','MOOD_REPLY_UNAVAILABLE','RATE_LIMITED','WORD_GAME_CHANGED','WORD_ALREADY_SENT','FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
+ const allowed=['PROMISE_ALREADY_SIGNED','PROMISE_SEALED','PROMISE_NOT_FOUND','MOOD_TALK_EXPIRED','MOOD_TALK_CHANGED','MOOD_REPLY_UNAVAILABLE','RATE_LIMITED','WORD_GAME_CHANGED','WORD_ALREADY_SENT','FORBIDDEN','NO_CREDITS','GAME_CHANGED','INVALID_INPUT','INVALID_MOOD','MOOD_EMAIL_REQUIRED','LINK_EXPIRED','UPLOAD_EXPIRED','INVALID_IMAGE','INVALID_MEDIA','FACE_REFERENCE_MISSING','FACE_REFERENCE_CHANGED','FACE_MISMATCH','FACE_UNAVAILABLE','EMBEDDING_UNAVAILABLE','MODEL_MISMATCH','MAIL_UNAVAILABLE','TEASE_UNAVAILABLE','TEASE_LIMIT'];
  const code=allowed.find(c=>message.includes(c))||'SERVER_ERROR';
  console.error('gift-api failure',code); // Never log answers, images, tokens or provider responses.
- return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'||code==='RATE_LIMITED'?429:code==='MOOD_TALK_CHANGED'?409:400);
+ return reply({error:code},code==='FORBIDDEN'?403:code==='SERVER_ERROR'||code==='EMBEDDING_UNAVAILABLE'||code==='MAIL_UNAVAILABLE'||code==='FACE_UNAVAILABLE'||code==='TEASE_UNAVAILABLE'||code==='MOOD_REPLY_UNAVAILABLE'?503:code==='TEASE_LIMIT'||code==='RATE_LIMITED'?429:code==='MOOD_TALK_CHANGED'||code==='PROMISE_ALREADY_SIGNED'||code==='PROMISE_SEALED'?409:400);
  }
 });
