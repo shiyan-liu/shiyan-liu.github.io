@@ -126,7 +126,7 @@ Deno.serve(async req=>{
  try {
  const raw = await req.text(); if(raw.length>300000) throw new Error('INVALID_INPUT');
  const body = JSON.parse(raw); const action = text(body.action,30);
- if(action!=='promise-sign' && raw.length>16000) throw new Error('INVALID_INPUT');
+ if(action!=='promise-sign' && action!=='kitchen-order' && raw.length>16000) throw new Error('INVALID_INPUT');
  if(action.startsWith('public-word-')){const result=await publicWordHandler(db,req,body,Deno.env.get('LOGIN_RATE_SALT')||'public-word-rooms');return reply(result.data,result.status);}
  if(action==='mood-reminder') {
    const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -214,7 +214,9 @@ Deno.serve(async req=>{
    const orderId = uuid(body.orderId);
    const meal = body.meal;
    if (meal !== 'breakfast' && meal !== 'snack') throw Error('INVALID_INPUT');
-   if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw Error('INVALID_INPUT');
+   const customItems = body.customItems === undefined ? [] : body.customItems;
+   if (!Array.isArray(body.items) || body.items.length > 30 || !Array.isArray(customItems) ||
+       (!body.items.length && !customItems.length)) throw Error('INVALID_INPUT');
    const note = body.note == null || body.note === '' ? '' : text(body.note, 500);
    const selected = new Set<string>();
    const lines = body.items.map((item: {id?: unknown; count?: unknown} | null) => {
@@ -226,12 +228,21 @@ Deno.serve(async req=>{
      selected.add(dish.id);
      return `• ${dish.name} × ${count}`;
    });
+   const customLines = customItems.map((item: {name?: unknown; count?: unknown} | null) => {
+     const name = text(item?.name, 80);
+     const count = item?.count;
+     if (/[\r\n]/.test(name) || typeof count !== 'number' || !Number.isSafeInteger(count) || count < 1) {
+       throw Error('INVALID_INPUT');
+     }
+     return `• ${name} × ${count}`;
+   });
    const mealLabel = kitchenMeals[meal as keyof typeof kitchenMeals];
    const orderText = [
      `小厨房收到了一份${mealLabel}点单。`,
      `类型：${mealLabel}`,
      '',
      ...lines,
+     ...(customLines.length ? [...(lines.length ? [''] : []), '菜单外的小心愿', ...customLines] : []),
      ...(note ? ['', `备注：${note}`] : []),
      '',
      `订单编号：${orderId.slice(0, 8).toUpperCase()}`,

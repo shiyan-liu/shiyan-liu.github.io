@@ -84,3 +84,20 @@
  .private-space-kitchen:has(.kitchen-mobile-cart) .space-music{bottom:calc(64px + env(safe-area-inset-bottom))}
 }
 @media(prefers-reduced-motion:reduce){.kitchen-photo-button img{transition:none}}
+
+.kitchen-hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.kitchen-hero-actions>button{display:inline-flex;align-items:center;gap:6px;padding:9px 11px;border:1px solid #e9d8bb70;border-radius:8px;background:transparent;color:#fffaf0;font-size:13px}
+.kitchen-hero-actions>button:hover{background:#fffaf015}
+.kitchen-inline-link{border:0;background:none;color:#825347;text-decoration:underline;text-underline-offset:3px;padding:0}
+.kitchen-order form .kitchen-custom{margin:17px 0 0;padding:9px 10px 10px;border:1px solid #ebd8c9;border-radius:10px;background:#fcf1e8;color:#744f42}
+.kitchen-custom legend{padding:0 5px;margin:0}
+.kitchen-custom legend svg{vertical-align:-3px;margin-right:3px;color:#aa6050;fill:#e8bdad}
+.kitchen-custom p{margin:0 0 9px;font-size:12px;line-height:1.65}
+.kitchen-custom-list{display:grid;gap:7px;max-height:200px;overflow:auto;padding:3px}
+.kitchen-custom-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:4px}
+.kitchen-custom-row input{min-width:0;width:100%;height:34px;padding:4px 6px;border:1px solid #e4cfc0;border-radius:6px;background:#fffaf5;color:#4b382d;font-size:12px}
+.kitchen-custom-count{display:flex;align-items:center;gap:3px;font-size:11px}
+.kitchen-custom-count input{width:38px;text-align:center}
+.kitchen-custom-remove{display:grid;place-items:center;width:26px;height:32px;padding:0;border:0;background:none;color:#895e4e}
+.kitchen-custom-add{display:inline-flex;align-items:center;gap:4px;min-height:33px;margin-top:4px;padding:3px 6px;border:0;background:none;color:#754537;font-size:12px;font-weight:650}
+.kitchen-custom-add:hover,.kitchen-custom-remove:hover{background:#f3e1d4;border-radius:6px}
