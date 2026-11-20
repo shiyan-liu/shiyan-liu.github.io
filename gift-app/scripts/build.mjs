@@ -26,7 +26,7 @@ const jsVersion = await version('app.js');
 const html = template.replace('<script type="module" src="/src/main.tsx"></script>', `<link rel="stylesheet" href="/zz/gift/assets/app.css?v=${cssVersion}"><script type="module" src="/zz/gift/assets/app.js?v=${jsVersion}"></script>`);
 if (html === template) throw new Error('Gift HTML entry point not found');
 await writeFile(resolve(output, 'index.html'), html);
-for(const [path,title] of [['../zz/words','默契猜词'],['../zz/mood','宝宝心情充电站'],['../zz/snacks','给你的零食小柜'],['../zz','zz的小空间'],['../zz/letter','给你的一封信'],['../zz/promise','关于彼此偏爱的约定']]){
+for(const [path,title] of [['../zz/words','默契猜词'],['../zz/mood','宝宝心情充电站'],['../zz/snacks','给你的零食小柜'],['../zz','zz的小空间'],['../zz/letter','给你的一封信'],['../zz/promise','关于彼此偏爱的约定'],['../zz/kitchen','我们的小厨房']]){
 const pageOutput=resolve(root,path);
 await mkdir(pageOutput,{recursive:true});
 await writeFile(resolve(pageOutput,'index.html'),`<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script src="/zz/gift/config.js"></script><title>${title}</title></head><body><div id="root"></div><link rel="stylesheet" href="/zz/gift/assets/app.css?v=${cssVersion}"><script type="module" src="/zz/gift/assets/app.js?v=${jsVersion}"></script></body></html>`);
@@ -35,6 +35,8 @@ await copyFile(resolve(root, 'public/config.js'), resolve(output, 'config.js'));
 await cp(resolve(root,'public/audio'),resolve(root,'../zz/audio'),{recursive:true});
 await copyFile(resolve(root, 'public/mood-hearts.png'), resolve(output, 'assets/mood-hearts.png'));
 await cp(resolve(root, 'public/snacks'), resolve(root, '../zz/snacks/assets'), { recursive: true });
+
+await cp(resolve(root, 'public/menu'), resolve(root, '../zz/kitchen/images'), { recursive: true });
 
 // Public game has its own bundle: no private-space UI or identity/session code.
 const publicOutput=resolve(root,'../w');

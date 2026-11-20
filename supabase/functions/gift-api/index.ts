@@ -1,3 +1,4 @@
+import { kitchenMenu, kitchenMeals } from '../_shared/kitchen-menu.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.57.4';
 import { normalize, similarity } from './scoring.ts';
 import { publicWordRound } from './word-game.mjs';
@@ -206,8 +207,38 @@ Deno.serve(async req=>{
    const sub=check(await db.from('gift_email_subscriptions').select('email').eq('user_id',user.id).eq('status','active').maybeSingle());
    return reply(await moodTalk(user.id,sub?.email||null,action,body));
  }
- const limit = ['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
+ const limit = action==='kitchen-order'?8:['guess','upload-intent','finalize-upload','media-upload-intent','finalize-media','face-check'].includes(action)?12:60;
  if(!['tease','mood-select'].includes(action) && !check(await db.rpc('gift_rate',{p_user:user.id,p_action:action,p_limit:limit}))) return reply({error:'RATE_LIMITED'},429);
+ if (action === 'kitchen-order') {
+   if (member.role !== 'player') throw Error('FORBIDDEN');
+   const orderId = uuid(body.orderId);
+   const meal = body.meal;
+   if (meal !== 'breakfast' && meal !== 'snack') throw Error('INVALID_INPUT');
+   if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw Error('INVALID_INPUT');
+   const note = body.note == null || body.note === '' ? '' : text(body.note, 500);
+   const selected = new Set<string>();
+   const lines = body.items.map((item: {id?: unknown; count?: unknown} | null) => {
+     const dish = kitchenMenu.find(dish => dish.id === item?.id);
+     const count = item?.count;
+     if (!dish || selected.has(dish.id) || typeof count !== 'number' || !Number.isInteger(count) || count < 1 || count > 12) {
+       throw Error('INVALID_INPUT');
+     }
+     selected.add(dish.id);
+     return `• ${dish.name} × ${count}`;
+   });
+   const mealLabel = kitchenMeals[meal as keyof typeof kitchenMeals];
+   const orderText = [
+     `小厨房收到了一份${mealLabel}点单。`,
+     `类型：${mealLabel}`,
+     '',
+     ...lines,
+     ...(note ? ['', `备注：${note}`] : []),
+     '',
+     `订单编号：${orderId.slice(0, 8).toUpperCase()}`,
+   ].join('\n');
+   await sendMail(ownerEmail(), `【小厨房】${mealLabel}点单 · ${orderId.slice(0, 8).toUpperCase()}`, orderText, `kitchen-order/${user.id}/${orderId}`);
+   return reply({orderId});
+ }
  if(action==='word-state') {
    const games=check(await db.from('word_games').select('*').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(51));
    const requested=body.gameId?uuid(body.gameId):games[0]?.id;

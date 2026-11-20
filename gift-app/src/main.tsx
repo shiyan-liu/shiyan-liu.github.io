@@ -1,3 +1,4 @@
+import {KitchenApp} from './kitchen';
 import React,{useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {cfg,supabase} from './space-session';
@@ -66,11 +67,11 @@ function App(){const [ready,setReady]=useState(false),[state,setState]=useState<
  {(error||notice)&&<Toast message={error||notice} error={!!error} onClose={()=>{setError('');setNotice('');}}/>}
  </div>;
 }
-const privatePaths=new Set(['/zz','/zz/','/zz/gift','/zz/gift/','/zz/mood','/zz/mood/','/zz/snacks','/zz/snacks/','/zz/words','/zz/words/','/zz/letter','/zz/letter/','/zz/promise','/zz/promise/','/gift','/gift/']);
+const privatePaths=new Set(['/zz','/zz/','/zz/gift','/zz/gift/','/zz/mood','/zz/mood/','/zz/snacks','/zz/snacks/','/zz/words','/zz/words/','/zz/letter','/zz/letter/','/zz/promise','/zz/promise/','/zz/kitchen','/zz/kitchen/','/gift','/gift/']);
 function PrivateSpace(){
  const [path,setPath]=useState(location.pathname);
  useEffect(()=>{const update=()=>{setPath(location.pathname);};const navigate=(event:MouseEvent)=>{if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||!(event.target instanceof Element))return;const a=event.target.closest<HTMLAnchorElement>('a[href]');if(!a||a.hasAttribute('download')||(a.target&&a.target!=='_self'))return;const url=new URL(a.href,location.href);if(url.origin!==location.origin||!privatePaths.has(url.pathname)||url.hash)return;event.preventDefault();if(url.href===location.href)return;history.pushState(null,'',url.href);update();window.scrollTo(0,0);};window.addEventListener('popstate',update);document.addEventListener('click',navigate);return()=>{window.removeEventListener('popstate',update);document.removeEventListener('click',navigate);};},[]);
- useEffect(()=>{document.title=path.startsWith('/zz/words')?'默契猜词':path.startsWith('/zz/snacks')?'给你的零食小柜':path.startsWith('/zz/mood')?'宝宝心情充电站':path.startsWith('/zz/letter')?'给你的一封信':path.startsWith('/zz/promise')?'关于彼此偏爱的约定':path.startsWith('/zz/gift')||path.startsWith('/gift')?'Guess My Gift':'zz的小空间';},[path]);
- return <div className={`private-space ${path.startsWith('/zz/letter')?'private-space-letter':path.startsWith('/zz/promise')?'private-space-promise':''}`}>{path.startsWith('/zz/words')?<WordsApp/>:path.startsWith('/zz/snacks')?<SnacksApp/>:path.startsWith('/zz/mood')?<MoodApp/>:path.startsWith('/zz/letter')?<LetterApp/>:path.startsWith('/zz/promise')?<PromiseApp/>:path.startsWith('/zz/gift')||path.startsWith('/gift')?<App/>:<HubApp/>}<SpaceMusic/></div>;
+ useEffect(()=>{document.title=path.startsWith('/zz/kitchen')?'我们的小厨房':path.startsWith('/zz/words')?'默契猜词':path.startsWith('/zz/snacks')?'给你的零食小柜':path.startsWith('/zz/mood')?'宝宝心情充电站':path.startsWith('/zz/letter')?'给你的一封信':path.startsWith('/zz/promise')?'关于彼此偏爱的约定':path.startsWith('/zz/gift')||path.startsWith('/gift')?'Guess My Gift':'zz的小空间';},[path]);
+ return <div className={`private-space ${path.startsWith('/zz/letter')?'private-space-letter':path.startsWith('/zz/promise')?'private-space-promise':path.startsWith('/zz/kitchen')?'private-space-kitchen':''}`}>{path.startsWith('/zz/kitchen')?<KitchenApp/>:path.startsWith('/zz/words')?<WordsApp/>:path.startsWith('/zz/snacks')?<SnacksApp/>:path.startsWith('/zz/mood')?<MoodApp/>:path.startsWith('/zz/letter')?<LetterApp/>:path.startsWith('/zz/promise')?<PromiseApp/>:path.startsWith('/zz/gift')||path.startsWith('/gift')?<App/>:<HubApp/>}<SpaceMusic/></div>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><PrivateSpace/></React.StrictMode>);
