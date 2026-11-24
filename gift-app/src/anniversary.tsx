@@ -78,7 +78,7 @@ export function AnniversaryApp() {
         <div className="anniversary-gallery">
           <div className="anniversary-inlay" aria-hidden="true"/>
           <button type="button" className="anniversary-stage" onClick={opened ? () => flowerDetail.current?.showModal() : advance}
-            aria-label={opened ? '放大看九朵玫瑰' : actionLabels[step]}
+            aria-label={opened ? '放大看黄金玫瑰手捧花' : actionLabels[step]}
             aria-controls={opened ? 'anniversary-detail' : 'anniversary-gift-scene'} aria-haspopup={opened ? 'dialog' : undefined}>
             <span id="anniversary-gift-scene" className="anniversary-scene" aria-hidden="true">
               <span className="anniversary-pedestal"/>
@@ -100,7 +100,7 @@ export function AnniversaryApp() {
                 <span className="anniversary-wax"><span>100</span><Heart size={11}/></span>
               </span>
             </span>
-            {opened && <span className="anniversary-zoom"><ZoomIn size={15} aria-hidden="true"/> 看看小花</span>}
+            {opened && <span className="anniversary-zoom"><ZoomIn size={15} aria-hidden="true"/> 看看手捧花</span>}
           </button>
 
           {unfolded && <article ref={note} className="anniversary-note" aria-labelledby="anniversary-note-title">
@@ -128,12 +128,12 @@ export function AnniversaryApp() {
       </section>
 
       <dialog ref={flowerDetail} id="anniversary-detail" className="anniversary-detail" aria-labelledby="anniversary-detail-title">
-        <button type="button" className="anniversary-detail-close" aria-label="关闭小花特写"
+        <button type="button" className="anniversary-detail-close" aria-label="关闭手捧花特写"
           onClick={() => flowerDetail.current?.close()}><X size={19} aria-hidden="true"/></button>
         <div className="anniversary-detail-image">
           <img src={boxArt} alt="九朵金色玫瑰，花头外沿有粉色绶带"/>
         </div>
-        <h2 id="anniversary-detail-title">九朵小玫瑰</h2>
+        <h2 id="anniversary-detail-title">黄金玫瑰手捧花</h2>
       </dialog>
     </div>
   </main>;
