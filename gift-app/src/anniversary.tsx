@@ -3,7 +3,7 @@ import {ArrowDown, ArrowLeft, ArrowRight, BookOpen, Heart, RotateCcw, X, ZoomIn}
 import {supabase} from './space-session';
 import './anniversary.css';
 
-const boxArt = '/zz/anniversary/vr1700-star-box.webp';
+const boxArt = '/zz/anniversary/vr1700-star-box.webp?v=2';
 const steps = ['封签', '礼盒', '捧花', '手写卡'] as const;
 const actionLabels = ['揭开封签', '打开星形礼盒', '翻开手写卡', '把礼物封好'] as const;
 const glints = [

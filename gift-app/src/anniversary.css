@@ -161,7 +161,7 @@
 .step-0 .anniversary-case { opacity: 0; }
 .anniversary-case {
   /* All three plates use the same illustration, so the hinge and the tray align. */
-  --hinge: 55.5%;
+  --hinge: 52.5%;
   --closed-lid: 76.2%;
   position: absolute;
   top: 1%;
@@ -356,12 +356,12 @@
 }
 .anniversary-detail-image img {
   position: absolute;
-  top: 51%;
+  top: 50%;
   left: 50%;
-  width: 450%;
+  width: 390%;
   max-width: none;
   height: auto;
-  transform: translate(-49%, -66%);
+  transform: translate(-49%, -63%);
 }
 .anniversary-detail-close {
   position: absolute;
