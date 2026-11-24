@@ -3,6 +3,7 @@
 .anniversary-app {
   --ink: #4a2530;
   --wine: #732f49;
+  --ease-out: cubic-bezier(.22,.67,.25,1);
   min-height: 100svh;
   padding: 0 24px 74px;
   color: var(--ink);
@@ -29,7 +30,7 @@
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 0fr;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   min-height: clamp(350px, 52vh, 475px);
   padding: 15px;
@@ -38,7 +39,6 @@
   background:
     radial-gradient(ellipse at 50% 69%, #d5827f77, transparent 55%),
     radial-gradient(ellipse at 45% 5%, #a45c63 0%, #643245 57%, #492136 100%);
-  transition: grid-template-columns .85s cubic-bezier(.24,.7,.27,1);
 }
 .anniversary-gallery::before {
   content: '';
@@ -50,7 +50,6 @@
   transition: opacity .75s ease;
 }
 .is-open .anniversary-gallery::before { opacity: .68; }
-.is-unfolded .anniversary-gallery { grid-template-columns: minmax(0, .96fr) minmax(0, 1.04fr); }
 .anniversary-inlay {
   position: absolute;
   z-index: -1;
@@ -72,7 +71,8 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 100%;
+  width: 54%;
+  justify-self: center;
   min-width: 0;
   height: clamp(320px, 49vh, 440px);
   padding: 0;
@@ -80,7 +80,9 @@
   border-radius: 9px;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
+  transition: transform .66s var(--ease-out);
 }
+.is-unfolded .anniversary-stage { transform: translateX(-46%); }
 .anniversary-stage:focus-visible { outline: 1px solid #ffd9b2; outline-offset: -10px; }
 .anniversary-scene { position: relative; width: 100%; height: 100%; }
 .anniversary-pedestal {
@@ -100,7 +102,7 @@
   z-index: 5;
   top: 48%;
   left: 50%;
-  width: min(76%, 435px);
+  width: min(92%, 435px);
   aspect-ratio: 1.58;
   display: block;
   overflow: hidden;
@@ -110,9 +112,13 @@
   border-radius: 4px 8px 5px 7px;
   box-shadow: 0 30px 45px #30132868, inset 0 0 0 7px #ffc98f1e;
   opacity: 1;
-  transition: transform .66s cubic-bezier(.32,.63,.28,1), opacity .45s ease;
+  transition: transform .64s var(--ease-out), opacity .38s ease;
 }
-.anniversary-folio:not(.step-0) .anniversary-envelope { transform: translate(-50%, -122%) rotate(-8deg) scale(.83); opacity: 0; pointer-events: none; }
+.anniversary-folio:not(.step-0) .anniversary-envelope {
+  transform: translate(-50%, -119%) rotate(-9deg) scale(.9);
+  opacity: 0;
+  transition-delay: .1s, .23s;
+}
 .anniversary-envelope::before {
   content: '';
   position: absolute;
@@ -126,9 +132,9 @@
   background: linear-gradient(155deg, #fff6e1 16%, #f3dfc2 70%, #bd8a6b);
   clip-path: polygon(0 0, 100% 0, 56% 67%, 50% 70%, 44% 67%);
   transform-origin: 50% 0;
-  transition: transform .63s;
+  transition: transform .46s var(--ease-out);
 }
-.anniversary-folio:not(.step-0) .anniversary-envelope-flap { transform: rotateX(128deg); }
+.anniversary-folio:not(.step-0) .anniversary-envelope-flap { transform: perspective(430px) rotateX(69deg); }
 .anniversary-envelope-to {
   position: absolute;
   left: 8%;
@@ -154,13 +160,13 @@
   outline: 1px solid #e1a98b8c;
   outline-offset: -8px;
   box-shadow: 0 4px 7px #6332464f, inset 0 2px 2px #ffdab97a;
+  transition: transform .4s var(--ease-out), opacity .28s ease;
 }
+.anniversary-folio:not(.step-0) .anniversary-wax { transform: translate(-62%, -98%) rotate(-8deg) scale(.86); opacity: 0; }
 .anniversary-wax span { font: italic clamp(19px, 3.6vw, 33px)/1 Georgia, serif; }
 .anniversary-wax svg { stroke-width: 1.3; }
 .anniversary-stage:hover .anniversary-wax { background: radial-gradient(ellipse at 32% 22%, #bf7580, #95455d 54%, #60263f 96%); }
-.step-0 .anniversary-case { opacity: 0; }
 .anniversary-case {
-  /* All three plates use the same illustration, so the hinge and the tray align. */
   --hinge: 52.5%;
   --closed-lid: 76.2%;
   position: absolute;
@@ -168,12 +174,17 @@
   left: 50%;
   height: 92%;
   aspect-ratio: 1199 / 1312;
-  transform: translate(-50%, -10%);
-  transition: transform .8s cubic-bezier(.23,.68,.27,1), opacity .38s ease;
+  transform: translate(-50%, -10%) scale(1);
+  transition: transform .84s var(--ease-out), opacity .44s ease .21s;
   perspective: 650px;
   perspective-origin: 50% 54%;
 }
-.is-open .anniversary-case { transform: translate(-50%, 0); }
+.step-0 .anniversary-case {
+  opacity: 0;
+  transform: translate(-50%, -6%) scale(.96);
+  transition: transform .68s var(--ease-out), opacity .26s ease;
+}
+.is-open .anniversary-case { transform: translate(-50%, 0) scale(1); }
 .anniversary-case img, .anniversary-case-hinge, .anniversary-case-shell {
   position: absolute;
   inset: 0;
@@ -192,9 +203,9 @@
   z-index: 1;
   clip-path: inset(calc(var(--hinge) - .15%) 0 24% 0);
   opacity: 0;
-  transition: opacity .21s ease;
+  transition: opacity .29s ease;
 }
-.is-open .anniversary-case-tray { opacity: 1; transition-delay: .19s; }
+.is-open .anniversary-case-tray { opacity: 1; transition-delay: .16s; }
 .anniversary-case::after {
   content: '';
   position: absolute;
@@ -205,55 +216,45 @@
   background: linear-gradient(#efc3c9, #dea6b3 59%, #f1c1ca);
   box-shadow: inset 0 -1px #ab727d5e;
   opacity: 1;
-  transition: opacity .22s ease;
+  transition: opacity .26s ease .09s;
   pointer-events: none;
 }
-.is-open .anniversary-case::after { opacity: 0; }
+.is-open .anniversary-case::after { opacity: 0; transition-delay: .18s; }
 .anniversary-case-hinge {
   z-index: 3;
   transform-origin: 50% var(--hinge);
   transform: translateY(calc(var(--closed-lid) - var(--hinge))) rotateX(-73deg) scaleX(.88);
-  transition: transform .82s cubic-bezier(.23,.68,.27,1);
+  transition: transform .84s var(--ease-out);
 }
 .is-open .anniversary-case-hinge { transform: translateY(0) rotateX(0) scaleX(1); }
-.anniversary-case-lining, .anniversary-case-shell {
-  clip-path: inset(0 0 calc(100% - var(--hinge)) 0);
-  transition: opacity .37s ease;
+.anniversary-case-lining { clip-path: inset(0 0 calc(100% - var(--hinge)) 0); }
+.anniversary-case img.anniversary-case-shell {
+  height: var(--hinge);
+  transition: opacity .3s ease;
 }
-.anniversary-case-lining { opacity: 0; }
-.is-open .anniversary-case-lining { opacity: 1; transition-delay: .12s; }
-.anniversary-case-shell {
-  background: linear-gradient(160deg, #fae0df 12%, #f1c8cc 43%, #d796a6 57%, #bd7e8d 100%);
-  mask-position: center;
-  mask-size: 100% 100%;
-  mask-repeat: no-repeat;
-  filter: drop-shadow(0 -5px 6px #773b482e);
-}
-.is-open .anniversary-case-shell { opacity: 0; transition-delay: .12s; }
-
+.is-open .anniversary-case-shell { opacity: 0; transition-delay: .07s; }
 
 .anniversary-glints { position: absolute; z-index: 5; left: 50%; top: 63%; pointer-events: none; }
 .anniversary-glints i {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  transform: rotate(45deg);
+  width: 9px;
+  height: 9px;
+  clip-path: polygon(50% 0, 64% 36%, 100% 50%, 64% 64%, 50% 100%, 36% 64%, 0 50%, 36% 36%);
   background: #ffdc9c;
-  box-shadow: 0 0 12px #ffc27ab8;
   opacity: 0;
-  animation: anniversary-spark 1.4s ease-out calc(470ms + var(--delay)) both;
+  animation: anniversary-spark 1.2s var(--ease-out) calc(440ms + var(--delay)) both;
 }
-.anniversary-glints i:nth-child(3n) { background: #ffd5cf; }
+.anniversary-glints i:nth-child(3n) { width: 6px; height: 6px; background: #ffd5cf; }
 @keyframes anniversary-spark {
-  from { opacity: 0; transform: rotate(45deg) scale(.3); }
-  36%, 80% { opacity: .95; }
-  to { opacity: 0; transform: translate(var(--x), var(--y)) rotate(125deg) scale(.5); }
+  from { opacity: 0; transform: scale(.35); }
+  32% { opacity: .76; }
+  to { opacity: 0; transform: translate(var(--x), var(--y)) rotate(35deg) scale(.55); }
 }
 .anniversary-zoom {
   position: absolute;
   left: 50%;
   bottom: 4px;
-  transform: translateX(-50%);
+  transform: translate(-50%, 5px);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -265,11 +266,22 @@
   border: 1px solid #f8b8a454;
   border-radius: 20px;
   font-size: 12px;
+  opacity: 0;
+  transition: opacity .24s ease, transform .24s var(--ease-out);
 }
+.is-open .anniversary-stage:not([aria-disabled]) .anniversary-zoom { opacity: 1; transform: translate(-50%, 0); }
+.anniversary-note-slot {
+  position: absolute;
+  top: 50%;
+  right: 3%;
+  width: 47%;
+  transform: translateY(-50%);
+}
+.anniversary-note-slot[inert] { pointer-events: none; }
 .anniversary-note {
   min-width: 0;
   position: relative;
-  margin: 8px 22px 10px 5px;
+  margin: 0;
   padding: clamp(18px, 3vw, 34px);
   border: 1px solid #f8d7b9;
   outline: 1px solid #b8836166;
@@ -278,11 +290,14 @@
   background: repeating-linear-gradient(0deg, #9b734606 0 1px, transparent 1px 4px), linear-gradient(146deg, #fff5df, #f9e4ca);
   box-shadow: 0 20px 36px #37152b50;
   transform-origin: 0 50%;
-  animation: anniversary-unfold .78s cubic-bezier(.22,.7,.2,1) both;
+  opacity: 0;
+  transform: perspective(700px) translateX(-14px) rotateY(-13deg);
+  transition: opacity .23s ease, transform .43s var(--ease-out);
 }
-@keyframes anniversary-unfold {
-  from { opacity: 0; transform: perspective(650px) translateX(-12px) rotateY(-48deg) rotate(-2deg); }
-  to { opacity: 1; transform: perspective(650px) translateX(0) rotateY(0) rotate(-1deg); }
+.is-unfolded .anniversary-note {
+  opacity: 1;
+  transform: perspective(700px) translateX(0) rotateY(0);
+  transition: opacity .35s ease .15s, transform .53s var(--ease-out) .15s;
 }
 .anniversary-note-rule { display: flex; justify-content: center; align-items: center; gap: 10px; color: #ae6b71; }
 .anniversary-note-rule::before, .anniversary-note-rule::after { content: ''; width: 42px; height: 1px; background: #d9b19f; }
@@ -311,30 +326,36 @@
   font-weight: 650;
 }
 .anniversary-action:hover { background: #5c263b; }
+.anniversary-action { min-width: 152px; }
+.anniversary-stage[aria-disabled], .anniversary-action[aria-disabled] { cursor: default; }
 .anniversary-reset { justify-self: end; min-width: 38px; min-height: 38px; padding: 6px; color: var(--wine); background: transparent; border-color: #dfb9aa; }
 .anniversary-reset:hover { background: #f4dfd6; }
 .anniversary-sr { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; }
 .anniversary-detail-close { display: grid; place-items: center; border: 0; color: var(--wine); }
-@media (max-width: 670px) {
+@media (max-width: 760px) {
   .anniversary-app { padding: 0 12px 80px; }
   .anniversary-nav { min-height: 49px; }
   .anniversary-header { padding: 5px 0 15px; }
   .anniversary-address { font-size: 11px; }
   .anniversary-gallery { min-height: 0; padding: 10px; }
-  .anniversary-gallery, .is-unfolded .anniversary-gallery { grid-template-columns: minmax(0, 1fr); }
-  .anniversary-stage { height: min(87vw, 373px); }
+  .anniversary-stage { width: 100%; height: min(87vw, 373px); }
+  .is-unfolded .anniversary-stage { transform: none; }
+  .anniversary-envelope { width: min(76%, 435px); }
+  .anniversary-note-slot {
+    position: static;
+    width: auto;
+    transform: none;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .49s var(--ease-out) .12s;
+  }
+  .is-unfolded .anniversary-note-slot { grid-template-rows: 1fr; transition-delay: 0s; }
+  .anniversary-note-paper { min-height: 0; overflow: clip; }
   .anniversary-note { margin: 11px 9px 9px; }
   .anniversary-controls { padding: 9px 10px 12px; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
   .anniversary-progress { grid-column: 1 / -1; justify-content: center; padding: 3px 0; }
   .anniversary-action { grid-column: 1; justify-self: center; margin-left: 45px; padding-inline: 18px; }
   .anniversary-controls > :last-child { width: 38px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .anniversary-gallery, .anniversary-gallery::before, .anniversary-case, .anniversary-case::after,
-  .anniversary-case-hinge, .anniversary-case-lining, .anniversary-case-shell, .anniversary-case-tray,
-  .anniversary-envelope, .anniversary-envelope-flap { transition: none; }
-  .anniversary-glints { display: none; }
-  .anniversary-note { animation: none; }
 }
 .anniversary-detail {
   position: fixed;
@@ -345,8 +366,21 @@
   color: #503b3b;
   background: #fff5e8;
   box-shadow: 0 20px 70px #512c3f42;
+  opacity: 0;
+  transform: translateY(7px) scale(.985);
+  transition: opacity .22s ease, transform .25s var(--ease-out), display .25s allow-discrete, overlay .25s allow-discrete;
 }
-.anniversary-detail::backdrop { background: #381a2d8c; }
+.anniversary-detail[open] { opacity: 1; transform: none; }
+.anniversary-detail::backdrop {
+  background: #381a2d8c;
+  opacity: 0;
+  transition: opacity .22s ease, display .25s allow-discrete, overlay .25s allow-discrete;
+}
+.anniversary-detail[open]::backdrop { opacity: 1; }
+@starting-style {
+  .anniversary-detail[open] { opacity: 0; transform: translateY(7px) scale(.985); }
+  .anniversary-detail[open]::backdrop { opacity: 0; }
+}
 .anniversary-detail-image {
   position: relative;
   height: min(310px, 74vw);
@@ -376,3 +410,9 @@
   background: #fff5e8;
 }
 .anniversary-detail h2 { margin: 12px 0 2px; text-align: center; font: 650 19px 'Songti SC', 'Noto Serif SC', STSong, serif; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anniversary-app *, .anniversary-app *::after, .anniversary-app *::before,
+  .anniversary-app .anniversary-detail::backdrop { transition: none !important; }
+  .anniversary-glints { display: none; }
+}
