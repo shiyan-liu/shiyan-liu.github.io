@@ -62,12 +62,12 @@ export async function loadAnniversaryAlbum(pass: string): Promise<AnniversaryAlb
   const keyBytes = Uint8Array.from(match[1].match(/../g)!, hex => Number.parseInt(hex, 16));
   const key = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['decrypt']);
   const manifest = JSON.parse(new TextDecoder().decode(await openObject(manifestUrl, key)));
-  const scenes = manifest.scenes as AnniversaryScene[];
-  if (manifest.version !== 1 || !Array.isArray(scenes) || !scenes.length) throw new Error('Empty album');
   const edition = manifest.edition;
   if (edition !== undefined && (typeof edition !== 'string' || !/^[a-f0-9]{16}$/.test(edition))) {
     throw new Error('Invalid album edition');
   }
+  const scenes = (edition ? manifest.editionScenes : manifest.scenes) as AnniversaryScene[];
+  if (manifest.version !== 1 || !Array.isArray(scenes) || !scenes.length) throw new Error('Empty album');
   const basePath = manifestUrl.pathname.replace(/album\.bin$/, edition ? `${edition}/` : '');
   const urls = scenes.map((scene, index) => {
     const url = signedObject(scene.url, /^[a-f0-9]{24}\/(?:[a-f0-9]{16}\/)?scene-\d{3}\.bin$/);
