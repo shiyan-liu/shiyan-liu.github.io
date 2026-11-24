@@ -2,7 +2,7 @@ import {useEffect, useRef, useState, type CSSProperties} from 'react';
 import {preload} from 'react-dom';
 import {ArrowDown, ArrowLeft, ArrowRight, BookOpen, Heart, RotateCcw, X, ZoomIn} from 'lucide-react';
 import {AnniversaryMemories} from './anniversary-memories';
-import {anniversaryPhotos} from './anniversary-photos';
+import {captureAnniversaryPass, loadAnniversaryAlbum, type AnniversaryAlbum} from './anniversary-photos';
 import {supabase} from './space-session';
 import './anniversary.css';
 
@@ -17,9 +17,8 @@ const stageDetails = {
   letter: {label: '手写卡', action: '把礼物封好', status: '手写卡已展开', duration: 720},
 } as const;
 type Stage = keyof typeof stageDetails;
-const stages: readonly Stage[] = anniversaryPhotos.length
-  ? ['seal', 'memories', 'box', 'flowers', 'letter']
-  : ['seal', 'box', 'flowers', 'letter'];
+const withMemories: readonly Stage[] = ['seal', 'memories', 'box', 'flowers', 'letter'];
+const giftOnly: readonly Stage[] = ['seal', 'box', 'flowers', 'letter'];
 const glints = [
   [-104, -55, 0], [-80, -108, 90], [-39, -134, 100], [0, -157, 170],
   [43, -130, 135], [86, -98, 95], [110, -49, 180], [94, -6, 225], [-91, 1, 205],
@@ -31,18 +30,25 @@ export function AnniversaryApp() {
   preload('/zz/anniversary/letter-script.woff', {as: 'font', type: 'font/woff', crossOrigin: 'anonymous'});
   const [ready, setReady] = useState(false);
   const [stage, setStage] = useState<Stage>('seal');
+  const [albumPass, setAlbumPass] = useState('');
+  const [album, setAlbum] = useState<AnniversaryAlbum>();
+  const [albumFailed, setAlbumFailed] = useState(false);
+  const [albumRetry, setAlbumRetry] = useState(0);
   const [inMotion, setInMotion] = useState(false);
   const motionTimer = useRef<number>(undefined);
   const flowerDetail = useRef<HTMLDialogElement>(null);
+  const mainAction = useRef<HTMLButtonElement>(null);
   const presentation = useRef<HTMLElement>(null);
   const note = useRef<HTMLElement>(null);
   const opened = stage === 'flowers' || stage === 'letter';
   const unfolded = stage === 'letter';
   const rewinding = stage === 'memories';
+  const stages = albumPass ? withMemories : giftOnly;
   const step = stages.indexOf(stage);
   const {action, status} = stageDetails[stage];
 
   useEffect(() => {
+    setAlbumPass(captureAnniversaryPass());
     if (!supabase) {
       location.replace('/zz/');
       return;
@@ -63,12 +69,29 @@ export function AnniversaryApp() {
   }, []);
 
   useEffect(() => {
+    if (!ready || !albumPass) return;
+    let active = true;
+    let current: AnniversaryAlbum | undefined;
+    void loadAnniversaryAlbum(albumPass).then(value => {
+      if (!active) { value.dispose(); return; }
+      current = value;
+      setAlbum(value);
+      void value.images(0).catch(() => {});
+    }).catch(() => { if (active) setAlbumFailed(true); });
+    return () => { active = false; current?.dispose(); };
+  }, [ready, albumPass, albumRetry]);
+
+  useEffect(() => {
     if (unfolded && matchMedia('(max-width: 760px) and (prefers-reduced-motion: reduce)').matches) {
       note.current?.scrollIntoView({block: 'nearest'});
     }
   }, [unfolded]);
 
   useEffect(() => () => window.clearTimeout(motionTimer.current), []);
+
+  useEffect(() => {
+    if (stage === 'box' && albumPass) mainAction.current?.focus({preventScroll: true});
+  }, [stage, albumPass]);
 
   if (!ready) return <main className="anniversary-app anniversary-loading" role="status">正在取出你的小礼物…</main>;
 
@@ -102,7 +125,7 @@ export function AnniversaryApp() {
         <h1 id="anniversary-title">把第一百天，留在这里</h1>
       </header>
 
-      <section ref={presentation} className={`anniversary-folio step-${stage}${opened ? ' is-open' : ''}${unfolded ? ' is-unfolded' : ''}`}
+      <section ref={presentation} className={`anniversary-folio step-${stage}${albumPass ? ' has-memories' : ''}${opened ? ' is-open' : ''}${unfolded ? ' is-unfolded' : ''}`}
         aria-labelledby="anniversary-title">
         <div className="anniversary-gallery">
           <div className="anniversary-inlay" aria-hidden="true"/>
@@ -133,7 +156,14 @@ export function AnniversaryApp() {
             </span>
             <span className="anniversary-zoom" aria-hidden="true"><ZoomIn size={15}/> 看看这束花</span>
           </button>
-          {anniversaryPhotos.length > 0 && <AnniversaryMemories active={rewinding}/>}
+          {rewinding && (album ? <AnniversaryMemories album={album} onFinish={() => moveTo('box')}/> :
+            <div className="anniversary-film-wait">
+              <p role="status">{albumFailed ? '这卷胶片暂时没有取出来。' : '时光机正在把胶片卷好…'}</p>
+              {albumFailed && <div>
+                <button type="button" className="anniversary-film-next" onClick={() => {setAlbumFailed(false); setAlbumRetry(value => value + 1);}}>再试一次</button>
+                <button type="button" className="anniversary-film-dates" onClick={() => moveTo('box')}>先去开礼盒</button>
+              </div>}
+            </div>)}
 
           <div className="anniversary-note-slot" inert={!unfolded} onTransitionEnd={event => {
             if (event.target === event.currentTarget && event.propertyName === 'grid-template-rows') {
@@ -162,11 +192,11 @@ export function AnniversaryApp() {
             {stages.map((item, index) => <li key={item} aria-current={stage === item ? 'step' : undefined}
               className={index < step ? 'is-past' : ''}>{stageDetails[item].label}</li>)}
           </ol>
-          <button type="button" className="anniversary-action" onClick={advance} aria-disabled={inMotion || undefined}>
+          {rewinding ? <span/> : <button ref={mainAction} type="button" className="anniversary-action" onClick={advance} aria-disabled={inMotion || undefined}>
             {unfolded ? <RotateCcw size={16} aria-hidden="true"/> : opened ? <BookOpen size={16} aria-hidden="true"/> : null}
             {action}
             {!unfolded && (stage === 'seal' ? <ArrowDown size={16} aria-hidden="true"/> : <ArrowRight size={16} aria-hidden="true"/>)}
-          </button>
+          </button>}
           {stage !== 'seal' && !unfolded ? <button type="button" className="anniversary-reset" onClick={() => moveTo('seal')} aria-label="从头再拆" title="从头再拆"><RotateCcw size={16} aria-hidden="true"/></button> : <span/>}
         </div>
         <span className="anniversary-sr" role="status">{status}</span>
