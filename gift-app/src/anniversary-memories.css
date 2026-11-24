@@ -81,9 +81,9 @@
   border-radius: 4px;
   background: linear-gradient(100deg, #271d25, #352533 48%, #271d25);
   touch-action: pan-y;
-  --film-direction: 1;
+  --film-clip: inset(0 0 0 100%);
 }
-.anniversary-film-window.back { --film-direction: -1; }
+.anniversary-film-window.back { --film-clip: inset(0 100% 0 0); }
 .anniversary-film-frames {
   position: absolute;
   inset: 0;
@@ -91,6 +91,7 @@
   grid-template-columns: repeat(var(--film-count, 1), minmax(0, 1fr));
   gap: 8px;
   padding: 13px 11px;
+  background: linear-gradient(100deg, #271d25, #352533 48%, #271d25);
 }
 .anniversary-film-frames::before, .anniversary-film-frames::after {
   content: '';
@@ -103,15 +104,15 @@
 .anniversary-film-frames::after { inset: auto 6px 3px; }
 .anniversary-film-frames.count-2 { --film-count: 2; }
 .anniversary-film-frames.count-3 { --film-count: 3; }
-.anniversary-film-frames.is-current { animation: anniversary-film-in .34s var(--ease-out) both; }
-.anniversary-film-frames.is-leaving { animation: anniversary-film-out .34s var(--ease-out) both; pointer-events: none; }
+.anniversary-film-frames.is-current { animation: anniversary-film-in .39s var(--ease-out) both; }
+.anniversary-film-frames.is-leaving { animation: anniversary-film-out .39s step-end both; pointer-events: none; }
 @keyframes anniversary-film-in {
-  from { opacity: 0; transform: translateX(calc(var(--film-direction) * 9px)); }
-  to { opacity: 1; transform: none; }
+  from { clip-path: var(--film-clip); }
+  to { clip-path: inset(0); }
 }
 @keyframes anniversary-film-out {
-  from { opacity: 1; transform: none; }
-  to { opacity: 0; transform: translateX(calc(var(--film-direction) * -9px)); visibility: hidden; }
+  from { visibility: visible; }
+  to { visibility: hidden; }
 }
 .anniversary-film-print {
   display: grid;
