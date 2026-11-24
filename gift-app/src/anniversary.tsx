@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, type CSSProperties} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
 import {preload} from 'react-dom';
 import {ArrowDown, ArrowLeft, ArrowRight, BookOpen, Heart, RotateCcw, X, ZoomIn} from 'lucide-react';
 import {AnniversaryMemories} from './anniversary-memories';
@@ -11,7 +11,7 @@ const closedLidArt = '/zz/anniversary/vr1700-lid.webp';
 const bouquetTitle = '给你的金色玫瑰';
 const stageDetails = {
   seal: {label: '封签', action: '揭开封签', status: '礼物已封好', duration: 920},
-  memories: {label: '时光机', action: '去打开礼盒', status: '时光机已打开', duration: 1000},
+  memories: {label: '时光机', action: '去打开礼盒', status: '时光机已打开', duration: 1320},
   box: {label: '礼盒', action: '打开星形礼盒', status: '礼盒在等你打开', duration: 980},
   flowers: {label: '捧花', action: '翻开手写卡', status: '礼盒已打开', duration: 1120},
   letter: {label: '手写卡', action: '把礼物封好', status: '手写卡已展开', duration: 720},
@@ -35,10 +35,13 @@ export function AnniversaryApp() {
   const [albumFailed, setAlbumFailed] = useState(false);
   const [albumRetry, setAlbumRetry] = useState(0);
   const [inMotion, setInMotion] = useState(false);
+  const [filmVisible, setFilmVisible] = useState(false);
   const motionTimer = useRef<number>(undefined);
   const flowerDetail = useRef<HTMLDialogElement>(null);
   const mainAction = useRef<HTMLButtonElement>(null);
   const presentation = useRef<HTMLElement>(null);
+  const gallery = useRef<HTMLDivElement>(null);
+  const filmSlot = useRef<HTMLDivElement>(null);
   const note = useRef<HTMLElement>(null);
   const opened = stage === 'flowers' || stage === 'letter';
   const unfolded = stage === 'letter';
@@ -89,6 +92,21 @@ export function AnniversaryApp() {
 
   useEffect(() => () => window.clearTimeout(motionTimer.current), []);
 
+  useLayoutEffect(() => {
+    const frame = gallery.current;
+    const film = filmSlot.current;
+    if (!frame || !film) return;
+
+    const fitFilm = () => frame.style.setProperty('--film-height', `${film.offsetHeight}px`);
+    fitFilm();
+    const observer = new ResizeObserver(fitFilm);
+    observer.observe(film);
+    return () => {
+      observer.disconnect();
+      frame.style.removeProperty('--film-height');
+    };
+  }, [filmVisible]);
+
   useEffect(() => {
     if (stage === 'box' && albumPass) mainAction.current?.focus({preventScroll: true});
   }, [stage, albumPass]);
@@ -99,8 +117,12 @@ export function AnniversaryApp() {
     window.clearTimeout(motionTimer.current);
     setStage(nextStage);
     const animate = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setFilmVisible(nextStage === 'memories' && !animate);
     setInMotion(animate);
-    if (animate) motionTimer.current = window.setTimeout(() => setInMotion(false), stageDetails[nextStage].duration);
+    if (animate) motionTimer.current = window.setTimeout(() => {
+      if (nextStage === 'memories') setFilmVisible(true);
+      setInMotion(false);
+    }, stageDetails[nextStage].duration);
   }
 
   function advance() {
@@ -127,7 +149,7 @@ export function AnniversaryApp() {
 
       <section ref={presentation} className={`anniversary-folio step-${stage}${albumPass ? ' has-memories' : ''}${opened ? ' is-open' : ''}${unfolded ? ' is-unfolded' : ''}`}
         aria-labelledby="anniversary-title">
-        <div className="anniversary-gallery">
+        <div ref={gallery} className="anniversary-gallery">
           <div className="anniversary-inlay" aria-hidden="true"/>
           <button type="button" className="anniversary-stage" onClick={handleStageClick} inert={rewinding} aria-disabled={inMotion || undefined}
             aria-label={opened ? '放大看看这束花' : action}
@@ -147,7 +169,9 @@ export function AnniversaryApp() {
                 {glints.map(([x, y, delay]) => <i key={x}
                   style={{'--x': `${x}px`, '--y': `${y}px`, '--delay': `${delay}ms`} as CSSProperties}/>)}
               </span>}
-              <span className="anniversary-envelope">
+              <span className="anniversary-envelope" onTransitionEnd={event => {
+                if (rewinding && event.target === event.currentTarget && event.propertyName === 'opacity') setFilmVisible(true);
+              }}>
                 <span className="anniversary-envelope-pocket"/>
                 <span className="anniversary-envelope-flap"/>
                 <span className="anniversary-envelope-to">写给 <i>ZZ</i></span>
@@ -156,14 +180,16 @@ export function AnniversaryApp() {
             </span>
             <span className="anniversary-zoom" aria-hidden="true"><ZoomIn size={15}/> 看看这束花</span>
           </button>
-          {rewinding && (album ? <AnniversaryMemories album={album} onFinish={() => moveTo('box')}/> :
-            <div className="anniversary-film-wait">
-              <p role="status">{albumFailed ? '这卷胶片暂时没有取出来。' : '时光机正在把胶片卷好…'}</p>
-              {albumFailed && <div>
-                <button type="button" className="anniversary-film-next" onClick={() => {setAlbumFailed(false); setAlbumRetry(value => value + 1);}}>再试一次</button>
-                <button type="button" className="anniversary-film-dates" onClick={() => moveTo('box')}>先去开礼盒</button>
+          {filmVisible && <div ref={filmSlot} className="anniversary-film-slot">
+            {album ? <AnniversaryMemories album={album} onFinish={() => moveTo('box')}/> :
+              <div className="anniversary-film-wait">
+                <p role="status">{albumFailed ? '这卷胶片暂时没有取出来。' : '时光机正在把胶片卷好…'}</p>
+                {albumFailed && <div>
+                  <button type="button" className="anniversary-film-next" onClick={() => {setAlbumFailed(false); setAlbumRetry(value => value + 1);}}>再试一次</button>
+                  <button type="button" className="anniversary-film-dates" onClick={() => moveTo('box')}>先去开礼盒</button>
+                </div>}
               </div>}
-            </div>)}
+          </div>}
 
           <div className="anniversary-note-slot" inert={!unfolded} onTransitionEnd={event => {
             if (event.target === event.currentTarget && event.propertyName === 'grid-template-rows') {
@@ -192,14 +218,14 @@ export function AnniversaryApp() {
             {stages.map((item, index) => <li key={item} aria-current={stage === item ? 'step' : undefined}
               className={index < step ? 'is-past' : ''}>{stageDetails[item].label}</li>)}
           </ol>
-          {rewinding ? <span/> : <button ref={mainAction} type="button" className="anniversary-action" onClick={advance} aria-disabled={inMotion || undefined}>
+          {rewinding ? <span className="anniversary-action-space" aria-hidden="true"/> : <button ref={mainAction} type="button" className="anniversary-action" onClick={advance} aria-disabled={inMotion || undefined}>
             {unfolded ? <RotateCcw size={16} aria-hidden="true"/> : opened ? <BookOpen size={16} aria-hidden="true"/> : null}
             {action}
             {!unfolded && (stage === 'seal' ? <ArrowDown size={16} aria-hidden="true"/> : <ArrowRight size={16} aria-hidden="true"/>)}
           </button>}
           {stage !== 'seal' && !unfolded ? <button type="button" className="anniversary-reset" onClick={() => moveTo('seal')} aria-label="从头再拆" title="从头再拆"><RotateCcw size={16} aria-hidden="true"/></button> : <span/>}
         </div>
-        <span className="anniversary-sr" role="status">{status}</span>
+        <span className="anniversary-sr" role="status">{rewinding && !filmVisible ? '正在揭开封签' : status}</span>
       </section>
 
       <dialog ref={flowerDetail} id="anniversary-detail" className="anniversary-detail" aria-labelledby="anniversary-detail-title">

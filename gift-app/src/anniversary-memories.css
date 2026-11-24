@@ -1,8 +1,14 @@
+.anniversary-film-slot {
+  position: absolute;
+  inset: var(--gallery-gutter) var(--gallery-gutter) auto;
+  z-index: 6;
+  display: grid;
+  animation: anniversary-film-arrive .38s var(--ease-out) .1s both;
+}
 .anniversary-memories {
   --film-paper: #fcf1e2;
   --film-ink: #54313d;
   position: relative;
-  z-index: 6;
   grid-area: 1 / 1;
   justify-self: center;
   display: grid;
@@ -11,7 +17,6 @@
   width: min(100% - 30px, 875px);
   margin-block: 10px;
   color: #fff0db;
-  animation: anniversary-film-arrive .49s var(--ease-out) .5s both;
 }
 @keyframes anniversary-film-arrive {
   from { opacity: 0; transform: translateY(9px); }
@@ -217,7 +222,7 @@
 .anniversary-film-fullscreen button { position: absolute; top: 14px; right: 14px; }
 .anniversary-film-fullscreen img { display: block; max-width: 100%; max-height: 67vh; object-fit: contain; border-radius: 5px; }
 .anniversary-film-fullscreen figcaption { padding-inline: 5px; text-align: center; font-size: 14px; }
-.anniversary-film-wait { justify-self: center; z-index: 2; grid-area: 1 / 1; color: #fff0db; text-align: center; }
+.anniversary-film-wait { display: grid; place-content: center; min-height: var(--stage-height); color: #fff0db; text-align: center; }
 .anniversary-film-wait div { display: flex; align-items: center; justify-content: center; gap: 9px; flex-wrap: wrap; }
 
 @media (max-width: 760px) {
@@ -233,6 +238,6 @@
   .anniversary-film-image svg { right: 3px; bottom: 3px; padding: 3px; width: 12px; height: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .anniversary-memories, .anniversary-film-frames.is-current, .anniversary-film-frames.is-leaving { animation: none; }
+  .anniversary-film-slot, .anniversary-film-frames.is-current, .anniversary-film-frames.is-leaving { animation: none; }
   .anniversary-film-frames.is-leaving { visibility: hidden; }
 }

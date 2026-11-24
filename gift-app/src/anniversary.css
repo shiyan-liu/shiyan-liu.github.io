@@ -33,18 +33,22 @@
   box-shadow: 0 22px 47px #713a3824, 0 2px 6px #96695114;
 }
 .anniversary-gallery {
+  --gallery-gutter: 15px;
+  --stage-height: clamp(320px, 49vh, 440px);
+  --gallery-rest-height: max(clamp(350px, 52vh, 475px), calc(var(--stage-height) + 2 * var(--gallery-gutter)));
   position: relative;
   isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  min-height: clamp(350px, 52vh, 475px);
-  padding: 15px;
+  min-height: max(var(--gallery-rest-height), calc(var(--film-height, 0px) + 2 * var(--gallery-gutter)));
+  padding: var(--gallery-gutter);
   overflow: clip;
   border-radius: 17px 17px 0 0;
   background:
     radial-gradient(ellipse at 50% 69%, #d5827f77, transparent 55%),
     radial-gradient(ellipse at 45% 5%, #a45c63 0%, #643245 57%, #492136 100%);
+  transition: min-height .46s cubic-bezier(.33,.04,.24,1);
 }
 .anniversary-gallery::before {
   content: '';
@@ -80,7 +84,7 @@
   width: 54%;
   justify-self: center;
   min-width: 0;
-  height: clamp(320px, 49vh, 440px);
+  height: var(--stage-height);
   padding: 0;
   border: 0;
   border-radius: 9px;
@@ -446,6 +450,7 @@
 }
 .anniversary-action:hover { background: #5c263b; }
 .anniversary-action { min-width: 152px; }
+.anniversary-action-space { min-height: 42px; }
 .anniversary-stage[aria-disabled], .anniversary-action[aria-disabled] { cursor: default; }
 .anniversary-reset { justify-self: end; min-width: 38px; min-height: 38px; padding: 6px; color: var(--wine); background: transparent; border-color: #dfb9aa; }
 .anniversary-reset:hover { background: #f4dfd6; }
@@ -456,8 +461,12 @@
   .anniversary-nav { min-height: 49px; }
   .anniversary-header { padding: 5px 0 15px; }
   .anniversary-address { font-size: 11px; }
-  .anniversary-gallery { min-height: 0; padding: 10px; }
-  .anniversary-stage { width: 100%; height: min(87vw, 373px); }
+  .anniversary-gallery {
+    --gallery-gutter: 10px;
+    --stage-height: min(87vw, 373px);
+    --gallery-rest-height: calc(var(--stage-height) + 2 * var(--gallery-gutter));
+  }
+  .anniversary-stage { width: 100%; }
   .is-unfolded .anniversary-stage { transform: none; }
   .anniversary-envelope { width: min(76%, 435px); }
   .anniversary-note-slot {
