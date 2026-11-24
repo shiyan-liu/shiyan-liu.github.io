@@ -17,6 +17,7 @@ await build({
   format: 'esm',
   platform: 'browser',
   target: 'es2020',
+  external: ['/zz/anniversary/*'],
   loader: { '.css': 'css', '.svg': 'dataurl' },
 });
 const template = await readFile(resolve(root, 'index.html'), 'utf8');

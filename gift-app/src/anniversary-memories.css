@@ -1,0 +1,92 @@
+.anniversary-memories {
+  position: absolute;
+  z-index: 6;
+  inset: 25px 5%;
+  width: min(90%, 625px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  color: #fff1df;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(.985);
+  transition: opacity .27s ease, transform .31s var(--ease-out), visibility 0s .31s;
+}
+.step-memories .anniversary-memories {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity .34s ease .61s, transform .37s var(--ease-out) .61s;
+}
+.anniversary-memory-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.anniversary-memory-heading h2 { margin: 0; font: clamp(24px, 4.4vw, 32px)/1.15 var(--handwriting); }
+.anniversary-memory-heading span { color: #f6cfaa; font-size: 12px; font-variant-numeric: tabular-nums; }
+.anniversary-memory-frame {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 6px;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 19px 7px;
+  border: 1px solid #bd8a77;
+  border-radius: 5px;
+  background:
+    repeating-linear-gradient(#e4ab8f55 0 7px, transparent 7px 17px) left 5px center / 5px calc(100% - 16px) no-repeat,
+    repeating-linear-gradient(#e4ab8f55 0 7px, transparent 7px 17px) right 5px center / 5px calc(100% - 16px) no-repeat,
+    #2c1a25;
+  box-shadow: 0 11px 25px #29131f72;
+}
+.anniversary-memory-photo {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #b2807136;
+  border-radius: 2px;
+  background: #211720;
+}
+.anniversary-memory-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+.anniversary-memory-photo p { margin: 0; color: #f6dbbf; font-size: 13px; }
+.anniversary-memory-frame figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1px 10px;
+  min-height: 18px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #f6dbbf;
+}
+.anniversary-memory-frame time { font-variant-numeric: tabular-nums; }
+.anniversary-memory-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.anniversary-memory-controls button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: #fff1df;
+  background: #592b42;
+  border: 1px solid #d6a58b;
+  border-radius: 50%;
+}
+.anniversary-memory-controls button:disabled { opacity: .38; cursor: default; }
+.anniversary-memory-controls input { width: min(46%, 230px); accent-color: #f4c19a; cursor: pointer; }
+
+@media (max-width: 760px) {
+  .anniversary-memories { inset: 19px 5%; gap: 8px; }
+  .anniversary-memory-frame { padding-inline: 15px; }
+}
