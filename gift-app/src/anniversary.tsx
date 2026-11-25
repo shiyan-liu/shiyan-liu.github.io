@@ -2,7 +2,7 @@ import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from '
 import {preload} from 'react-dom';
 import {ArrowDown, ArrowLeft, ArrowRight, BookOpen, Heart, RotateCcw, X, ZoomIn} from 'lucide-react';
 import {AnniversaryMemories} from './anniversary-memories';
-import {captureAnniversaryPass, loadAnniversaryAlbum, type AnniversaryAlbum} from './anniversary-photos';
+import {loadAnniversaryAlbum, type AnniversaryAlbum} from './anniversary-photos';
 import {supabase} from './space-session';
 import './anniversary.css';
 
@@ -17,8 +17,7 @@ const stageDetails = {
   letter: {label: '手写卡', action: '把礼物封好', status: '手写卡已展开', duration: 720},
 } as const;
 type Stage = keyof typeof stageDetails;
-const withMemories: readonly Stage[] = ['seal', 'memories', 'box', 'flowers', 'letter'];
-const giftOnly: readonly Stage[] = ['seal', 'box', 'flowers', 'letter'];
+const stages: readonly Stage[] = ['seal', 'memories', 'box', 'flowers', 'letter'];
 const glints = [
   [-104, -55, 0], [-80, -108, 90], [-39, -134, 100], [0, -157, 170],
   [43, -130, 135], [86, -98, 95], [110, -49, 180], [94, -6, 225], [-91, 1, 205],
@@ -30,7 +29,6 @@ export function AnniversaryApp() {
   preload('/zz/anniversary/letter-script.woff', {as: 'font', type: 'font/woff', crossOrigin: 'anonymous'});
   const [ready, setReady] = useState(false);
   const [stage, setStage] = useState<Stage>('seal');
-  const [albumPass, setAlbumPass] = useState('');
   const [album, setAlbum] = useState<AnniversaryAlbum>();
   const [albumFailed, setAlbumFailed] = useState(false);
   const [albumRetry, setAlbumRetry] = useState(0);
@@ -46,12 +44,13 @@ export function AnniversaryApp() {
   const opened = stage === 'flowers' || stage === 'letter';
   const unfolded = stage === 'letter';
   const rewinding = stage === 'memories';
-  const stages = albumPass ? withMemories : giftOnly;
   const step = stages.indexOf(stage);
   const {action, status} = stageDetails[stage];
 
   useEffect(() => {
-    setAlbumPass(captureAnniversaryPass());
+    if (location.hash.startsWith('#album=')) {
+      history.replaceState(history.state, '', location.pathname + location.search);
+    }
     if (!supabase) {
       location.replace('/zz/');
       return;
@@ -72,17 +71,17 @@ export function AnniversaryApp() {
   }, []);
 
   useEffect(() => {
-    if (!ready || !albumPass) return;
+    if (!ready) return;
     let active = true;
     let current: AnniversaryAlbum | undefined;
-    void loadAnniversaryAlbum(albumPass).then(value => {
+    void loadAnniversaryAlbum().then(value => {
       if (!active) { value.dispose(); return; }
       current = value;
       setAlbum(value);
       void value.images(0).catch(() => {});
     }).catch(() => { if (active) setAlbumFailed(true); });
     return () => { active = false; current?.dispose(); };
-  }, [ready, albumPass, albumRetry]);
+  }, [ready, albumRetry]);
 
   useEffect(() => {
     if (unfolded && matchMedia('(max-width: 760px) and (prefers-reduced-motion: reduce)').matches) {
@@ -108,8 +107,8 @@ export function AnniversaryApp() {
   }, [filmVisible]);
 
   useEffect(() => {
-    if (stage === 'box' && albumPass) mainAction.current?.focus({preventScroll: true});
-  }, [stage, albumPass]);
+    if (stage === 'box') mainAction.current?.focus({preventScroll: true});
+  }, [stage]);
 
   if (!ready) return <main className="anniversary-app anniversary-loading" role="status">正在取出你的小礼物…</main>;
 
@@ -147,7 +146,7 @@ export function AnniversaryApp() {
         <h1 id="anniversary-title">把第一百天，留在这里</h1>
       </header>
 
-      <section ref={presentation} className={`anniversary-folio step-${stage}${albumPass ? ' has-memories' : ''}${opened ? ' is-open' : ''}${unfolded ? ' is-unfolded' : ''}`}
+      <section ref={presentation} className={`anniversary-folio step-${stage}${opened ? ' is-open' : ''}${unfolded ? ' is-unfolded' : ''}`}
         aria-labelledby="anniversary-title">
         <div ref={gallery} className="anniversary-gallery">
           <div className="anniversary-inlay" aria-hidden="true"/>

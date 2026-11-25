@@ -1,4 +1,4 @@
-import {cfg} from './space-session';
+import {cfg, supabase} from './space-session';
 
 export type AnniversaryPhoto = {
   number: number;
@@ -23,20 +23,8 @@ export type AnniversaryAlbum = {
   dispose: () => void;
 };
 
-const passSlot = 'zz-anniversary-album';
 const passPattern = /^([a-f0-9]{64})\.([A-Za-z0-9_-]{20,1200})$/;
 const bucketPath = '/storage/v1/object/sign/anniversary-archive/';
-
-export function captureAnniversaryPass() {
-  const match = /^#album=(.*)$/.exec(location.hash);
-  if (match) {
-    if (!passPattern.test(match[1])) return '';
-    sessionStorage.setItem(passSlot, match[1]);
-    history.replaceState(history.state, '', location.pathname + location.search);
-    return match[1];
-  }
-  return sessionStorage.getItem(passSlot) ?? '';
-}
 
 function signedObject(value: string, object: RegExp) {
   const url = new URL(value);
@@ -54,7 +42,10 @@ async function openObject(url: URL, key: CryptoKey) {
   return crypto.subtle.decrypt({name: 'AES-GCM', iv: sealed.subarray(0, 12)}, key, sealed.subarray(12));
 }
 
-export async function loadAnniversaryAlbum(pass: string): Promise<AnniversaryAlbum> {
+export async function loadAnniversaryAlbum(): Promise<AnniversaryAlbum> {
+  if (!supabase) throw new Error('Album unavailable');
+  const {data: pass, error} = await supabase.rpc('gift_anniversary_pass');
+  if (error || typeof pass !== 'string') throw new Error('Album unavailable');
   const match = passPattern.exec(pass);
   if (!match) throw new Error('Invalid album pass');
   const manifestUrl = signedObject(atob(match[2].replace(/-/g, '+').replace(/_/g, '/')), /^[a-f0-9]{24}\/album\.bin$/);

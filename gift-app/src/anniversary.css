@@ -233,7 +233,7 @@
   transform: translate(-50%, -6%) scale(.96);
   transition: transform .68s var(--ease-out), opacity .26s ease;
 }
-.step-box.has-memories .anniversary-case { transition-delay: 0s, .08s; }
+.step-box .anniversary-case { transition-delay: 0s, .08s; }
 .is-open .anniversary-case { transform: translate(-50%, 0) scale(1); transition-delay: .04s, .25s; }
 .anniversary-case img, .anniversary-case-hinge, .anniversary-case-shell {
   position: absolute;
